@@ -1,20 +1,26 @@
 # Handoff
 
 ## From
+Codex
 
 ## To
+Codex
 
 ## Status
-Ready to publish
+Updated
 
 ## Project Type
-Repo bootstrap
+UX reverse engineering
 
 ## Workspace Path
 `/Users/radius/Downloads/makato-radius-core`
 
 ## What changed
-Initialized publishing flow for the folder and prepared git remote setup.
+Created a reverse-engineered markdown note for the RealScout client portal and captured the main browse, detail, messaging, valuation, and settings flows.
+Updated the knowledge base with user-confirmed product facts:
+- agent portal is Radius CRM
+- MEL AI generates matches with scores up to 100
+- clients can create unlimited saved searches under My Searches
 
 ## Knowledge used
 `AGENTS.md`
@@ -33,16 +39,18 @@ Initialized publishing flow for the folder and prepared git remote setup.
 `makato/kaizen/rules.md`
 
 ## Files touched
-`.gitignore`
+`makato/knowledge/realscout-reverse-engineered-ux.md`
+`makato/knowledge/summaries.md`
 `makato/handoff/latest.md`
 
 ## Decisions
-Use the target GitHub repo as `origin`.
+Use the live portal walkthrough as the primary source of truth.
 
 ## Risks
-Repository is not yet initialized, so push may depend on local git auth.
+Some account-specific areas may vary by client state or saved-search content.
+Map-pin/list sync behavior is still unconfirmed.
 
 ## Next action
-Create git repo, commit, push.
+Review the markdown and, if needed, expand with deeper flows from profile or search filters.
 
 ## Kaizen
