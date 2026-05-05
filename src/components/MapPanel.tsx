@@ -1,8 +1,11 @@
 "use client";
 
-import { Layers3, MapPinned, Crosshair } from "lucide-react";
+import { Layers3, MapPinned, Crosshair, Pencil, Save, Map as MapIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import type { Property } from "./mockData";
+import { SaveSearchDialog } from "./SaveSearchDialog";
+import { ControlPill } from "./ui/control-pill";
 
 type Props = {
   properties: Property[];
@@ -10,8 +13,14 @@ type Props = {
   customBoundaryActive: boolean;
   selectedLocation: string;
   mapLayer: string;
+  onToggleDrawingMode: () => void;
   onMarkerClick: (property: Property) => void;
   onMapClick: () => void;
+  mode?: string;
+  onSaveSearch: (name: string, frequency: string, emailAlerts: boolean) => void;
+  minPrice: string;
+  maxPrice: string;
+  moreFilters: any;
 };
 
 const layerLabels: Record<string, string> = {
@@ -27,44 +36,56 @@ export function MapPanel({
   customBoundaryActive,
   selectedLocation,
   mapLayer,
+  onToggleDrawingMode,
   onMarkerClick,
-  onMapClick
+  onMapClick,
+  mode,
+  onSaveSearch,
+  minPrice,
+  maxPrice,
+  moreFilters
 }: Props) {
   return (
-    <div className="relative min-h-[calc(100vh-72px)] flex-1 overflow-hidden bg-slate-100">
+    <div className="relative h-full flex-1 overflow-hidden bg-slate-100 font-sans">
       <div
-        className={[
-          "absolute inset-0",
-          mapLayer === "satellite"
-            ? "bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_25%),linear-gradient(135deg,#1f2937_0%,#334155_45%,#0f172a_100%)]"
-            : mapLayer === "traffic"
-            ? "bg-[linear-gradient(135deg,#e2e8f0_0%,#cbd5e1_100%)]"
-            : "bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.6),transparent_30%),linear-gradient(135deg,#eef2ff_0%,#dbeafe_45%,#e2e8f0_100%)]"
-        ].join(" ")}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url("/map-screenshot.png")' }}
         onClick={onMapClick}
       >
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.18)_1px,transparent_1px)] bg-[size:72px_72px] opacity-60" />
-
-        <div className="absolute left-5 top-5 flex gap-2">
-          <Badge variant="outline" className="bg-white/90">
-            <MapPinned className="mr-1 h-3.5 w-3.5" />
-            {selectedLocation}
-          </Badge>
-          <Badge variant="secondary" className="bg-slate-950/80 text-white border-slate-900">
-            <Layers3 className="mr-1 h-3.5 w-3.5" />
-            {layerLabels[mapLayer]}
-          </Badge>
-          {drawingMode ? (
-            <Badge variant="success" className="bg-emerald-600 text-white border-emerald-600">
-              <Crosshair className="mr-1 h-3.5 w-3.5" />
-              Drawing mode
-            </Badge>
-          ) : null}
+        {/* Map Overlay Controls */}
+        <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
+          <ControlPill 
+            icon={<MapPinned className="h-4 w-4" />}
+            label="All areas"
+          />
+          <ControlPill 
+            icon={<Layers3 className="h-4 w-4" />}
+            label="Standard"
+          />
+          <ControlPill 
+            icon={<Pencil className="h-4 w-4" />}
+            label={drawingMode ? "Stop drawing" : "Draw"}
+            active={drawingMode}
+            onClick={() => onToggleDrawingMode()}
+          />
+          
+          <SaveSearchDialog 
+            onSave={onSaveSearch} 
+            selectedLocation={selectedLocation} 
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            activeFilters={moreFilters}
+          >
+            <ControlPill 
+              icon={<Save className="h-4 w-4" />}
+              label="Save search"
+            />
+          </SaveSearchDialog>
         </div>
 
-        {customBoundaryActive ? (
-          <div className="absolute left-[18%] top-[18%] h-[46%] w-[38%] rounded-[36px] border-2 border-dashed border-blue-500 bg-blue-500/10 shadow-[0_0_0_9999px_rgba(15,23,42,0.06)]" />
-        ) : null}
+        {customBoundaryActive && !drawingMode && (
+          <div className="absolute left-[18%] top-[18%] h-[46%] w-[38%] rounded-[36px] border-2 border-dashed border-slate-400 bg-slate-900/5 shadow-[0_0_0_9999px_rgba(15,23,42,0.06)] pointer-events-none" />
+        )}
 
         <div className="absolute right-6 top-5 rounded-2xl border border-white/40 bg-white/80 px-4 py-3 shadow-lg backdrop-blur">
           <div className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Map layer</div>

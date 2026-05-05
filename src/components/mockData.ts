@@ -2,10 +2,16 @@ export type RouteKey =
   | "search"
   | "matches"
   | "my-searches"
+  | "home-value"
   | "interested"
+  | "messages"
   | "not-interested"
   | "profile"
-  | "settings";
+  | "settings"
+  | "logout"
+  | "recently-viewed";
+
+export type PropertyStatus = "search" | "interested" | "notInterested";
 
 export type Property = {
   id: string;
@@ -19,10 +25,13 @@ export type Property = {
   sqft: number;
   lot: string;
   yearBuilt: number;
+  listedDate: string;
   matchScore: number;
-  status: string;
+  interestStatus: string;
+  status: PropertyStatus;
   type: string;
   image: string;
+  images: string[];
   markerTop: string;
   markerLeft: string;
   description: string;
@@ -33,9 +42,13 @@ export type SavedSearch = {
   id: string;
   name: string;
   location: string;
-  criteria: string;
+  criteria: string; // Serialized active filters
   frequency: string;
   updatedAt: string;
+  propertyIds: string[];
+  priceMin?: string;
+  priceMax?: string;
+  emailAlerts?: boolean;
 };
 
 export const locationSuggestions = [
@@ -69,12 +82,10 @@ export const maxPriceOptions = [
 ];
 
 export const sortOptions = [
-  { value: "match-desc", label: "Match score" },
-  { value: "price-asc", label: "Price low to high" },
-  { value: "price-desc", label: "Price high to low" },
-  { value: "beds-desc", label: "Beds" },
-  { value: "sqft-desc", label: "Square feet" },
-  { value: "newest", label: "Newest" }
+  { value: "default", label: "Recent Status/Price Changes" },
+  { value: "newest", label: "Newest On Site" },
+  { value: "price-asc", label: "Lowest Price" },
+  { value: "price-desc", label: "Highest Price" }
 ];
 
 export const alertFrequencies = [
@@ -122,13 +133,19 @@ export const properties: Property[] = [
     sqft: 1824,
     lot: "0.14 ac",
     yearBuilt: 2018,
+    listedDate: "2024-05-01",
     matchScore: 96,
-    status: "New",
+    interestStatus: "New",
+    status: "search",
     type: "Townhome",
-    image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "31%",
-    markerLeft: "58%",
+    image: "/images/properties/prop-1-1.png",
+    images: [
+      "/images/properties/prop-1-1.png",
+      "/images/properties/prop-1-2.png",
+      "/images/properties/prop-1-3.png"
+    ],
+    markerTop: "38%",
+    markerLeft: "52%",
     description: "Bright corner townhome with walkable retail, hill views, and a private terrace.",
     tags: ["Walkable", "Terrace", "EV ready"]
   },
@@ -142,149 +159,191 @@ export const properties: Property[] = [
     beds: 4,
     baths: 3,
     sqft: 2460,
-    lot: "0.19 ac",
-    yearBuilt: 2021,
+    lot: "0.21 ac",
+    yearBuilt: 2015,
+    listedDate: "2024-04-15",
     matchScore: 93,
-    status: "Price cut",
+    interestStatus: "Price cut",
+    status: "search",
     type: "House",
-    image:
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "23%",
-    markerLeft: "34%",
-    description: "Modern family home with vaulted ceilings, chef kitchen, and shaded backyard.",
+    image: "/images/properties/prop-2-1.png",
+    images: [
+      "/images/properties/prop-2-1.png",
+      "/images/properties/prop-2-2.png",
+      "/images/properties/prop-2-3.png"
+    ],
+    markerTop: "42%",
+    markerLeft: "60%",
+    description: "Spacious house in the heart of Hyde Park with a chef's kitchen and shaded yard.",
     tags: ["Chef kitchen", "Shaded yard", "Corner lot"]
   },
   {
     id: "prop-3",
-    address: "1111 W 6th St #408",
-    area: "Downtown Austin",
-    city: "Austin",
-    state: "TX",
-    price: 725000,
-    beds: 2,
-    baths: 2,
-    sqft: 1312,
-    lot: "N/A",
-    yearBuilt: 2019,
-    matchScore: 90,
-    status: "Open house",
-    type: "Condo",
-    image:
-      "https://images.unsplash.com/photo-1502672023488-70e25813eb80?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "44%",
-    markerLeft: "49%",
-    description: "Lock-and-leave condo with skyline views and a concierge lobby.",
-    tags: ["Skyline", "Concierge", "Pool"]
+    address: "4683 Glenalbyn Drive",
+    area: "Mt Washington",
+    city: "Los Angeles",
+    state: "CA",
+    price: 1795000,
+    beds: 3,
+    baths: 3,
+    sqft: 2189,
+    lot: "0.15 ac",
+    yearBuilt: 2018,
+    listedDate: "2024-05-02",
+    matchScore: 98,
+    interestStatus: "Upcoming Open Houses",
+    status: "search",
+    type: "House",
+    image: "/images/properties/prop-3-1.png",
+    images: [
+      "/images/properties/prop-3-1.png",
+      "/images/properties/prop-3-2.png",
+      "/images/properties/prop-3-3.png"
+    ],
+    markerTop: "40%",
+    markerLeft: "48%",
+    description: "Stunning modern home with panoramic views and expansive outdoor living space.",
+    tags: ["Modern", "Views", "Open Floor Plan"]
   },
   {
     id: "prop-4",
-    address: "801 Baylor St",
-    area: "Clarksville",
-    city: "Austin",
-    state: "TX",
-    price: 1495000,
-    beds: 4,
-    baths: 4,
-    sqft: 2980,
-    lot: "0.11 ac",
-    yearBuilt: 2023,
-    matchScore: 88,
-    status: "New",
+    address: "3507 Cazador Street",
+    area: "Glassell Park",
+    city: "Los Angeles",
+    state: "CA",
+    price: 875000,
+    beds: 2,
+    baths: 1,
+    sqft: 1058,
+    lot: "0.12 ac",
+    yearBuilt: 1948,
+    listedDate: "2024-05-03",
+    matchScore: 89,
+    interestStatus: "For Sale",
+    status: "search",
     type: "House",
-    image:
-      "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "38%",
-    markerLeft: "27%",
-    description: "Architect-designed new build with clean lines and a shaded pool courtyard.",
-    tags: ["New build", "Pool", "Designer"]
+    image: "/images/properties/prop-4-1.png",
+    images: [
+      "/images/properties/prop-4-1.png",
+      "/images/properties/prop-4-2.png",
+      "/images/properties/prop-4-3.png"
+    ],
+    markerTop: "46%",
+    markerLeft: "42%",
+    description: "Charming bungalow with character and potential in a growing area.",
+    tags: ["Charming", "Great Value", "Bungalow"]
   },
   {
     id: "prop-5",
-    address: "1600 E 6th St #12",
+    address: "1205 E 7th St",
     area: "East Austin",
     city: "Austin",
     state: "TX",
-    price: 615000,
+    price: 645000,
     beds: 2,
     baths: 2,
-    sqft: 1084,
-    lot: "N/A",
-    yearBuilt: 2017,
-    matchScore: 86,
-    status: "Hot",
+    sqft: 1150,
+    lot: "0.10 ac",
+    yearBuilt: 2021,
+    listedDate: "2024-05-04",
+    matchScore: 92,
+    interestStatus: "New",
+    status: "search",
     type: "Condo",
-    image:
-      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "56%",
-    markerLeft: "67%",
-    description: "Compact loft with city access, exposed brick, and a rooftop deck.",
-    tags: ["Loft", "Deck", "Walk score 92"]
+    image: "/images/properties/prop-5-1.png",
+    images: [
+      "/images/properties/prop-5-1.png",
+      "/images/properties/prop-1-2.png",
+      "/images/properties/prop-1-3.png"
+    ],
+    markerTop: "44%",
+    markerLeft: "58%",
+    description: "Modern condo in East Austin with high ceilings and community pool.",
+    tags: ["Modern", "Pool", "High Ceilings"]
   },
   {
     id: "prop-6",
-    address: "3707 Rollingwood Dr",
+    address: "702 Wlake Dr",
     area: "Westlake",
     city: "Austin",
     state: "TX",
-    price: 2380000,
+    price: 2450000,
     beds: 5,
-    baths: 5,
-    sqft: 3822,
-    lot: "0.31 ac",
-    yearBuilt: 2020,
-    matchScore: 84,
-    status: "MLS",
+    baths: 4,
+    sqft: 4200,
+    lot: "0.45 ac",
+    yearBuilt: 2012,
+    listedDate: "2024-04-20",
+    matchScore: 85,
+    interestStatus: "For Sale",
+    status: "search",
     type: "House",
-    image:
-      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "17%",
-    markerLeft: "15%",
-    description: "Premium ridge home with panoramic windows and a resort-style pool.",
-    tags: ["Pool", "Views", "Luxury"]
+    image: "/images/properties/prop-6-1.png",
+    images: [
+      "/images/properties/prop-6-1.png",
+      "/images/properties/prop-2-1.png",
+      "/images/properties/prop-2-3.png"
+    ],
+    markerTop: "35%",
+    markerLeft: "45%",
+    description: "Executive estate in Westlake with pool, outdoor kitchen and views.",
+    tags: ["Estate", "Views", "Outdoor Kitchen"]
   },
   {
     id: "prop-7",
-    address: "5002 Trailside Ln",
+    address: "1502 Mueller Blvd",
     area: "Mueller",
     city: "Austin",
     state: "TX",
-    price: 788000,
+    price: 925000,
     beds: 3,
     baths: 3,
-    sqft: 1768,
-    lot: "0.08 ac",
-    yearBuilt: 2022,
-    matchScore: 82,
-    status: "New",
-    type: "Townhome",
-    image:
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "63%",
-    markerLeft: "42%",
-    description: "Low-maintenance home with pocket park access and a flexible bonus room.",
-    tags: ["Pocket park", "Bonus room", "Solar"]
+    sqft: 2100,
+    lot: "0.15 ac",
+    yearBuilt: 2023,
+    listedDate: "2024-05-05",
+    matchScore: 97,
+    interestStatus: "New build",
+    status: "search",
+    type: "House",
+    image: "/images/properties/prop-7-1.png",
+    images: [
+      "/images/properties/prop-7-1.png",
+      "/images/properties/prop-3-1.png",
+      "/images/properties/prop-3-3.png"
+    ],
+    markerTop: "41%",
+    markerLeft: "55%",
+    description: "Energy efficient new build in Mueller, steps from the park and lake.",
+    tags: ["Solar", "New Build", "Walkable"]
   },
   {
     id: "prop-8",
-    address: "1414 Barton Springs Rd",
-    area: "Zilker",
+    address: "804 Congress Ave",
+    area: "Downtown Austin",
     city: "Austin",
     state: "TX",
-    price: 1045000,
-    beds: 3,
+    price: 1250000,
+    beds: 2,
     baths: 2,
-    sqft: 1590,
-    lot: "0.17 ac",
-    yearBuilt: 2016,
-    matchScore: 79,
-    status: "Pending",
-    type: "House",
-    image:
-      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80",
-    markerTop: "71%",
-    markerLeft: "23%",
-    description: "Renovated bungalow with mature trees and quick trail access.",
-    tags: ["Bungalow", "Trail access", "Renovated"]
+    sqft: 1450,
+    lot: "N/A",
+    yearBuilt: 2019,
+    listedDate: "2024-05-02",
+    matchScore: 94,
+    interestStatus: "Price cut",
+    status: "search",
+    type: "Condo",
+    image: "/images/properties/prop-8-1.png",
+    images: [
+      "/images/properties/prop-8-1.png",
+      "/images/properties/prop-4-1.png",
+      "/images/properties/prop-4-3.png"
+    ],
+    markerTop: "43%",
+    markerLeft: "51%",
+    description: "Luxurious downtown loft with floor-to-ceiling windows and concierge.",
+    tags: ["Concierge", "Loft", "City Views"]
   }
 ];
 
@@ -295,7 +354,8 @@ export const initialSavedSearches: SavedSearch[] = [
     location: "Downtown Austin",
     criteria: "2+ beds, under $900K, high match score",
     frequency: "Instant",
-    updatedAt: "Today"
+    updatedAt: "Today",
+    propertyIds: ["prop-1", "prop-4"]
   },
   {
     id: "search-2",
@@ -303,6 +363,7 @@ export const initialSavedSearches: SavedSearch[] = [
     location: "Westlake",
     criteria: "4+ beds, pool, new build preferred",
     frequency: "Daily",
-    updatedAt: "Yesterday"
+    updatedAt: "Yesterday",
+    propertyIds: ["prop-2", "prop-3"]
   }
 ];

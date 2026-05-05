@@ -27,10 +27,20 @@ MA means remove noise before asking an LLM to work.
 ## Current Focus
 
 Project type:
+HTML prototype
 Workspace path:
+`workspace/html-prototype/`
 Relevant role:
+Agent
 Relevant screen:
+Sidebar
 Relevant Figma/screenshot:
+unknown
 Relevant decisions:
+2026-05-04 RealScout portal and match logic
 Files in scope:
+`workspace/html-prototype/src/index.html`
+`workspace/html-prototype/src/styles.css`
 Files out of scope:
+`workspace/web-app/`
+`workspace/mobile-design/`

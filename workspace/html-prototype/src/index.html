@@ -4,68 +4,135 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Radius Client Portal Prototype</title>
+  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="sidebar__brand">
-        <div class="sidebar__logo">R</div>
-        <div>
-          <div class="sidebar__title">Radius CRM</div>
-          <div class="sidebar__subtitle">Client portal prototype</div>
-        </div>
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="sidebar__header">
+        <ul class="sidebar-menu" aria-label="Workspace">
+          <li class="sidebar-menu__item">
+            <button class="sidebar-menu__button sidebar__workspace" data-route="search" aria-label="Radius CRM workspace">
+              <span class="sidebar__logo" aria-hidden="true">R</span>
+              <span class="sidebar-menu__copy sidebar__workspace-copy">
+                <strong>Radius CRM</strong>
+                <span>Agent portal</span>
+              </span>
+              <svg class="icon sidebar-menu__chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+            </button>
+          </li>
+        </ul>
       </div>
 
-      <button class="nav-pill nav-pill--primary" data-route="search">Search</button>
+      <nav class="sidebar__content" aria-label="Primary">
+        <section class="nav-group">
+          <button class="nav-group__toggle" data-toggle-group="searches" aria-expanded="true">
+            <span>Searches</span>
+            <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <ul class="sidebar-menu nav-group__items" data-group="searches">
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item is-active" data-route="search">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg></span>
+                <span class="nav-item__label">Search</span>
+              </button>
+            </li>
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="matches">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" /><path d="M20 2v4" /><path d="M22 4h-4" /><circle cx="4" cy="20" r="2" /></svg></span>
+                <span class="nav-item__label">My Matches</span>
+              </button>
+            </li>
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="my-searches">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg></span>
+                <span class="nav-item__label">My Home Search</span>
+              </button>
+            </li>
+          </ul>
+        </section>
 
-      <div class="nav-group">
-        <button class="nav-group__toggle" data-toggle-group="searches">
-          <span>Searches</span>
-          <span class="chev">⌄</span>
-        </button>
-        <div class="nav-group__items" data-group="searches">
-          <button class="nav-item is-active" data-route="search">Search</button>
-          <button class="nav-item" data-route="matches">My Matches</button>
-          <button class="nav-item" data-route="my-searches">My Home Search</button>
-        </div>
-      </div>
+        <section class="nav-group">
+          <button class="nav-group__toggle" data-toggle-group="leads" aria-expanded="true">
+            <span>Leads</span>
+            <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <ul class="sidebar-menu nav-group__items" data-group="leads">
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="interested">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 9.5a5.5 5.5 0 0 1 9.6-3.7.6.6 0 0 0 .8 0A5.5 5.5 0 0 1 22 9.5c0 2.3-1.5 4.2-3 5.7l-5.7 5.4a1.8 1.8 0 0 1-2.6 0L5 15.2c-1.5-1.5-3-3.4-3-5.7" /></svg></span>
+                <span class="nav-item__label">Interested</span>
+                <span class="count-badge" data-count-for="interested">0</span>
+              </button>
+            </li>
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="not-interested">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></span>
+                <span class="nav-item__label">Not Interested</span>
+                <span class="count-badge" data-count-for="not-interested">0</span>
+              </button>
+            </li>
+          </ul>
+        </section>
 
-      <div class="nav-group">
-        <button class="nav-group__toggle" data-toggle-group="leads">
-          <span>Leads</span>
-          <span class="chev">⌄</span>
-        </button>
-        <div class="nav-group__items" data-group="leads">
-          <button class="nav-item" data-route="interested">Interested</button>
-          <button class="nav-item" data-route="not-interested">Not Interested</button>
-        </div>
-      </div>
+        <section class="nav-group">
+          <button class="nav-group__toggle" data-toggle-group="account" aria-expanded="true">
+            <span>Account</span>
+            <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></svg>
+          </button>
+          <ul class="sidebar-menu nav-group__items" data-group="account">
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="profile">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg></span>
+                <span class="nav-item__label">My Profile</span>
+              </button>
+            </li>
+            <li class="sidebar-menu__item">
+              <button class="sidebar-menu__button nav-item" data-route="settings">
+                <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" /><circle cx="12" cy="12" r="3" /></svg></span>
+                <span class="nav-item__label">Settings</span>
+              </button>
+            </li>
+          </ul>
+        </section>
 
-      <div class="nav-group">
-        <button class="nav-group__toggle" data-toggle-group="account">
-          <span>Account</span>
-          <span class="chev">⌄</span>
-        </button>
-        <div class="nav-group__items" data-group="account">
-          <button class="nav-item" data-route="profile">My Profile</button>
-          <button class="nav-item" data-route="settings">Settings</button>
-        </div>
-      </div>
+        <section class="nav-group saved-block">
+          <div class="nav-group__toggle saved-block__label">
+            <span>Saved searches</span>
+          </div>
+          <ul class="sidebar-menu saved-list" id="savedList"></ul>
+        </section>
+      </nav>
 
-      <div class="saved-block">
-        <div class="saved-block__label">Saved searches</div>
-        <div class="saved-list" id="savedList"></div>
+      <div class="sidebar__footer">
+        <ul class="sidebar-menu">
+          <li class="sidebar-menu__item">
+            <button class="sidebar-menu__button sidebar__footer-chip" data-toggle-sidebar aria-label="Toggle sidebar width">
+              <span class="nav-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3h18" /><path d="M3 21h18" /><path d="M9 3v18" /><path d="m16 15-3-3 3-3" /></svg></span>
+              <span class="nav-item__label">Collapse</span>
+              <svg class="icon sidebar__collapse-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 6 3 12l6 6" /><path d="M3 12h18" /></svg>
+            </button>
+          </li>
+        </ul>
       </div>
+      <button class="sidebar-rail" data-toggle-sidebar aria-label="Toggle sidebar width"></button>
     </aside>
+
+    <button id="sidebarBackdrop" class="sidebar-backdrop hidden" data-close-sidebar aria-label="Close navigation"></button>
 
     <main class="main">
       <section class="route-shell" id="routeShell">
         <div class="page page--search" id="searchPage">
           <header class="topbar">
-            <div class="topbar__title">
-              <h1 id="pageTitle">Search</h1>
-              <p id="pageSubtitle">Browse live inventory and match scores.</p>
+            <div class="topbar__lead">
+              <button class="topbar__menu" data-open-sidebar aria-label="Open navigation">
+                <svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 12h16" /><path d="M4 18h16" /><path d="M4 6h16" /></svg>
+              </button>
+              <div class="topbar__title">
+                <h1 id="pageTitle">Search</h1>
+                <p id="pageSubtitle">Browse live inventory and match scores.</p>
+              </div>
             </div>
             <div class="topbar__meta">
               <span class="badge badge--soft" id="savedCount">2 saved searches</span>
@@ -256,6 +323,8 @@
     const routes = ["search", "matches", "my-searches", "interested", "not-interested", "profile", "settings"];
     const state = {
       activeRoute: "search",
+      sidebarCollapsed: false,
+      mobileSidebarOpen: false,
       expandedSidebarGroups: { searches: true, leads: true, account: true },
       selectedLocation: "All areas",
       minPrice: "0",
@@ -352,18 +421,20 @@
       select.value = value;
     };
 
-    const renderSaved = () => {
-      const list = el("savedList");
-      list.innerHTML = state.savedSearches.slice(0, 3).map((search) => `
-        <button class="saved-item" data-saved-location="${search.location}">
-          <span>
-            <strong>${search.name}</strong>
-            <small>${search.location}</small>
-          </span>
-          <span class="saved-item__icon">▦</span>
-        </button>
+      const renderSaved = () => {
+        const list = el("savedList");
+        list.innerHTML = state.savedSearches.slice(0, 3).map((search) => `
+        <li class="sidebar-menu__item">
+          <button class="saved-item" data-saved-location="${search.location}">
+            <span class="nav-item__label">
+              <strong>${search.name}</strong>
+              <small>${search.location}</small>
+            </span>
+            <span class="saved-item__icon"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1" /><rect width="7" height="7" x="14" y="3" rx="1" /><rect width="7" height="7" x="14" y="14" rx="1" /><rect width="7" height="7" x="3" y="14" rx="1" /></svg></span>
+          </button>
+        </li>
       `).join("");
-    };
+      };
 
     const renderProfile = () => {
       el("profilePage").innerHTML = `
@@ -555,17 +626,32 @@
     };
 
     const updateSidebar = () => {
+      const isMobile = window.innerWidth <= 1080;
+      document.documentElement.style.setProperty("--sidebar-width", state.sidebarCollapsed && !isMobile ? "48px" : "256px");
+      el("sidebarBackdrop").classList.toggle("hidden", !state.mobileSidebarOpen);
+      document.body.style.overflow = state.mobileSidebarOpen ? "hidden" : "";
+      const sidebar = document.querySelector(".sidebar");
+      sidebar?.classList.toggle("is-collapsed", state.sidebarCollapsed && !isMobile);
+      sidebar?.classList.toggle("is-open", state.mobileSidebarOpen);
+      const collapseIcon = document.querySelector(".sidebar__collapse-icon");
+      if (collapseIcon) collapseIcon.classList.toggle("is-reversed", state.sidebarCollapsed && !isMobile);
+      document.querySelector(".sidebar__workspace")?.classList.toggle("is-active", state.activeRoute === "search");
       document.querySelectorAll(".nav-item").forEach((btn) => {
         btn.classList.toggle("is-active", btn.dataset.route === state.activeRoute);
+        btn.setAttribute("aria-pressed", String(btn.dataset.route === state.activeRoute));
       });
       document.querySelectorAll(".nav-group__items").forEach((elGroup) => {
         const key = elGroup.dataset.group;
         elGroup.classList.toggle("is-collapsed", !state.expandedSidebarGroups[key]);
       });
-      const interested = document.querySelector('[data-route="interested"] .count-badge');
-      const notInterested = document.querySelector('[data-route="not-interested"] .count-badge');
-      if (interested) interested.textContent = state.liked.length;
-      if (notInterested) notInterested.textContent = state.disliked.length;
+      document.querySelectorAll("[data-count-for]").forEach((node) => {
+        if (node.dataset.countFor === "interested") node.textContent = state.liked.length;
+        if (node.dataset.countFor === "not-interested") node.textContent = state.disliked.length;
+      });
+      document.querySelectorAll(".nav-group__toggle").forEach((btn) => {
+        const group = btn.dataset.toggleGroup;
+        btn.setAttribute("aria-expanded", String(Boolean(state.expandedSidebarGroups[group])));
+      });
     };
 
     const openModal = (name) => {
@@ -639,11 +725,32 @@
     };
 
     document.addEventListener("click", (event) => {
-      const target = event.target.closest("[data-route],[data-open-modal],[data-open-property],[data-like],[data-dislike],[data-delete-search],[data-run-search],[data-saved-location],[data-toggle-group],[data-close-modal]");
+      const target = event.target.closest("[data-route],[data-open-modal],[data-open-property],[data-like],[data-dislike],[data-delete-search],[data-run-search],[data-saved-location],[data-toggle-group],[data-close-modal],[data-toggle-sidebar],[data-open-sidebar],[data-close-sidebar]");
       if (!target) return;
+
+      if (target.matches("[data-toggle-sidebar]")) {
+        if (window.innerWidth <= 1080) return;
+        state.sidebarCollapsed = !state.sidebarCollapsed;
+        updateSidebar();
+        return;
+      }
+
+      if (target.matches("[data-open-sidebar]")) {
+        state.mobileSidebarOpen = true;
+        state.sidebarCollapsed = false;
+        updateSidebar();
+        return;
+      }
+
+      if (target.matches("[data-close-sidebar]")) {
+        state.mobileSidebarOpen = false;
+        updateSidebar();
+        return;
+      }
 
       if (target.matches("[data-route]")) {
         state.activeRoute = target.dataset.route;
+        state.mobileSidebarOpen = false;
         renderRoute();
         return;
       }
@@ -672,12 +779,14 @@
       if (target.matches("[data-run-search]")) {
         state.activeRoute = "search";
         state.selectedLocation = target.dataset.runSearch;
+        state.mobileSidebarOpen = false;
         renderRoute();
         return;
       }
       if (target.matches("[data-saved-location]")) {
         state.activeRoute = "search";
         state.selectedLocation = target.dataset.savedLocation;
+        state.mobileSidebarOpen = false;
         renderRoute();
         return;
       }
@@ -707,6 +816,16 @@
     el("filterReset").addEventListener("click", () => { state.moreFilters = { propertyType: "Any", beds: "Any", baths: "Any", yearBuilt: "Any", hoa: "Any", openHouse: "Any", lot: "Any" }; renderRoute(); });
     el("detailLike").addEventListener("click", () => { like(state.activeProperty.id); closeAllModals(); });
     el("detailDislike").addEventListener("click", () => { dislike(state.activeProperty.id); closeAllModals(); });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1080 && state.mobileSidebarOpen) {
+        state.mobileSidebarOpen = false;
+        updateSidebar();
+      }
+      if (window.innerWidth <= 1080 && state.sidebarCollapsed) {
+        state.sidebarCollapsed = false;
+        updateSidebar();
+      }
+    });
 
     document.getElementById("suggestions").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-location]");

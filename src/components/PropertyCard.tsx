@@ -1,101 +1,200 @@
 "use client";
 
-import { Heart, X, MapPin, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Heart, X, MapPin, Home, Bed, Bath, Maximize, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Card, CardContent } from "./ui/card";
+import { Card } from "./ui/card";
 import type { Property } from "./mockData";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import "@/components/shadcn-space/button/button-02.css";
 
 type Props = {
   property: Property;
-  liked: boolean;
-  disliked: boolean;
   onOpen: () => void;
   onLike: () => void;
   onDislike: () => void;
   route: string;
 };
 
-export function PropertyCard({ property, liked, disliked, onOpen, onLike, onDislike, route }: Props) {
+export function PropertyCard({ property, onOpen, onLike, onDislike, route }: Props) {
+  const [currentImgIdx, setCurrentImgIdx] = useState(0);
+  const liked = property.status === "interested";
+  const disliked = property.status === "notInterested";
+  const isShiny = property.interestStatus === "New" || property.interestStatus === "Price cut";
+  const hasImages = property.images && property.images.length > 0;
+
+  // Format price to millions if over 1M
+  const formattedPrice = property.price >= 1000000 
+    ? `$${(property.price / 1000000).toFixed(2)}M` 
+    : `$${(property.price / 1000).toFixed(0)}K`;
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!hasImages) return;
+    setCurrentImgIdx((prev) => (prev + 1) % property.images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!hasImages) return;
+    setCurrentImgIdx((prev) => (prev - 1 + property.images.length) % property.images.length);
+  };
+
   return (
-    <Card className="overflow-hidden border-slate-200 transition hover:-translate-y-0.5 hover:shadow-md">
-      <button className="block w-full text-left" onClick={onOpen}>
-        <div className="relative h-40 w-full overflow-hidden">
-          <img src={property.image} alt={property.address} className="h-full w-full object-cover" />
-          <div className="absolute left-3 top-3 flex gap-2">
-            <Badge variant="outline" className="bg-white/95 text-slate-700">
-              {property.status}
-            </Badge>
-            <Badge variant="success" className="bg-emerald-50/95">
-              Match {property.matchScore}/100
-            </Badge>
-          </div>
-          <div className="absolute right-3 top-3 rounded-full bg-slate-950/75 px-2.5 py-1 text-xs font-medium text-white">
-            {property.type}
-          </div>
-        </div>
-      </button>
-      <CardContent className="space-y-3 pt-4">
-        <div>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-base font-semibold text-slate-900">${property.price.toLocaleString()}</div>
-              <div className="mt-0.5 text-sm text-slate-500">
-                {property.beds} bd · {property.baths} ba · {property.sqft.toLocaleString()} sf
+    <Card className="overflow-hidden border-slate-200/60 rounded-[24px] transition hover:-translate-y-0.5 hover:shadow-lg bg-white group">
+      <div className="relative h-48 w-full overflow-hidden bg-slate-50">
+        <AnimatePresence mode="wait">
+          {hasImages ? (
+            <motion.img
+              key={currentImgIdx}
+              src={property.images[currentImgIdx]}
+              alt={property.address}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="h-full w-full object-cover cursor-pointer"
+              onClick={onOpen}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from),_var(--tw-gradient-to))] from-slate-50 to-slate-100/50 cursor-pointer" onClick={onOpen}>
+              <div className="text-center space-y-3">
+                <div className="relative mx-auto">
+                  <Home className="h-12 w-12 text-slate-200" />
+                  <div className="absolute -inset-1 bg-white/20 blur-xl rounded-full" />
+                </div>
+                <span className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">
+                  Image Pending
+                </span>
               </div>
             </div>
-            <Badge variant="secondary">{route === "matches" ? "AI picked" : property.area}</Badge>
+          )}
+        </AnimatePresence>
+        
+        {/* Carousel Controls */}
+        {hasImages && property.images.length > 1 && (
+          <div className="absolute inset-0 flex items-center justify-between px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 pointer-events-auto"
+              onClick={prevImage}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 pointer-events-auto"
+              onClick={nextImage}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="mt-1 flex items-start gap-1.5 text-sm text-slate-700">
-            <MapPin className="mt-0.5 h-3.5 w-3.5 text-slate-400" />
-            <span>{property.address}</span>
+        )}
+
+        {/* Carousel Dots */}
+        {hasImages && property.images.length > 1 && (
+          <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 pointer-events-none">
+            {property.images.map((_, idx) => (
+              <div 
+                key={idx} 
+                className={cn(
+                  "h-1.5 rounded-full transition-all duration-300",
+                  idx === currentImgIdx ? "w-4 bg-white" : "w-1.5 bg-white/50"
+                )} 
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Top Badges */}
+        <div className="absolute inset-x-3 top-3 flex items-center justify-between pointer-events-none">
+          <Badge variant="secondary" className={cn(
+            "bg-white/90 text-slate-900 border-none px-3 py-1 text-[10px] font-bold uppercase tracking-wider pointer-events-auto",
+            isShiny && "relative overflow-hidden"
+          )}>
+            {isShiny && (
+              <div className="absolute inset-0 shiny pointer-events-none opacity-50 bg-[linear-gradient(110deg,transparent,45%,rgba(255,255,255,0.8),55%,transparent)] bg-[length:200%_100%]" />
+            )}
+            {property.interestStatus}
+          </Badge>
+          
+          <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none px-2 py-1 text-[10px] font-bold flex items-center gap-1 pointer-events-auto">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+            </svg>
+            {property.matchScore}%
+          </Badge>
+        </div>
+
+        {/* Floating Price Badge */}
+        <div className="absolute bottom-3 right-3 pointer-events-none">
+          <Badge variant="secondary" className="bg-white/95 text-[#4F46E5] border-none px-3 py-1.5 text-sm font-bold shadow-sm pointer-events-auto">
+            {formattedPrice}
+          </Badge>
+        </div>
+      </div>
+
+      <div className="p-5 space-y-4">
+        {/* Address Row */}
+        <div className="min-w-0">
+          <h3 className="text-[17px] font-extrabold text-slate-900 leading-tight">
+            {property.address}
+          </h3>
+        </div>
+
+        {/* Stats Row */}
+        <div className="flex items-center gap-5 text-[13px] text-slate-500 font-medium">
+          <div className="flex items-center gap-1.5">
+            <Bed className="h-4 w-4 text-slate-300" />
+            <span><span className="text-slate-900 font-bold">{property.beds}</span> bd</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Bath className="h-4 w-4 text-slate-300" />
+            <span><span className="text-slate-900 font-bold">{property.baths}</span> ba</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Maximize className="h-4 w-4 text-slate-300" />
+            <span><span className="text-slate-900 font-bold">{property.sqft.toLocaleString()}</span> Sq. ft</span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {property.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="muted">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-        <div className="flex gap-2">
+
+        {/* Actions Row */}
+        <div className="flex items-center gap-2">
           <Button
-            variant={liked ? "success" : "default"}
-            size="sm"
-            className="flex-1"
-            onClick={(event) => {
-              event.stopPropagation();
+            className={cn(
+              "flex-1 h-12 rounded-2xl font-bold text-sm transition-all shadow-sm",
+              liked 
+                ? "bg-red-600 hover:bg-red-700 text-white shadow-red-100 border-transparent" 
+                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
               onLike();
             }}
           >
-            <Heart className="h-4 w-4" />
-            {liked ? "Interested" : "Like"}
+            <Heart className={cn("h-4 w-4 mr-2", liked ? "fill-current text-white" : "text-slate-400")} />
+            Interested
           </Button>
           <Button
             variant="outline"
-            size="sm"
-            className={`flex-1 ${disliked ? "border-red-300 bg-red-50 text-red-700" : "text-slate-700"}`}
-            onClick={(event) => {
-              event.stopPropagation();
+            size="icon"
+            className={cn(
+              "h-12 w-12 rounded-2xl border-slate-200 bg-[#F8FAFC] text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all",
+              disliked && "border-red-200 bg-red-50 text-red-600"
+            )}
+            onClick={(e) => {
+              e.stopPropagation();
               onDislike();
             }}
           >
-            <X className="h-4 w-4" />
-            {disliked ? "Not interested" : "Dislike"}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="px-3"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpen();
-            }}
-          >
-            <Sparkles className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

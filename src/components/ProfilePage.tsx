@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Avatar } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -21,12 +21,18 @@ export function ProfilePage() {
             <div className="text-2xl font-semibold text-slate-900">My Profile</div>
             <div className="mt-1 text-sm text-slate-500">Agent profile inside Radius CRM.</div>
           </div>
-          <Badge variant="success">Active</Badge>
+          <Badge className="bg-emerald-600 text-white hover:bg-emerald-700">Active</Badge>
         </div>
 
         <Card>
           <CardContent className="flex flex-col gap-5 p-6 md:flex-row md:items-start">
-            <Avatar name={name} className="h-16 w-16 text-lg" />
+            <Avatar className="h-16 w-16">
+              <AvatarImage
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80"
+                alt={name}
+              />
+              <AvatarFallback className="text-lg">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
             <div className="grid flex-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <div className="text-sm font-medium text-slate-700">Name</div>

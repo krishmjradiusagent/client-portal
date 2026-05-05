@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Badge } from "./ui/badge";
+import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Select } from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { alertFrequencies } from "./mockData";
 
 export function SettingsPage() {
@@ -33,30 +34,35 @@ export function SettingsPage() {
             <div className="space-y-2">
               <div className="text-sm font-medium text-slate-700">Alerts</div>
               <button
-                className={`rounded-xl border px-4 py-2 text-sm font-medium ${alerts === "on" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-slate-300 bg-white text-slate-700"}`}
+                className={`rounded-md border px-4 py-2 text-sm font-medium ${alerts === "on" ? "border-slate-200 bg-slate-100 text-slate-900" : "border-slate-200 bg-white text-slate-700"}`}
                 onClick={() => setAlerts(alerts === "on" ? "off" : "on")}
               >
                 {alerts === "on" ? "On" : "Off"}
               </button>
             </div>
-            <div className="space-y-2">
-              <div className="text-sm font-medium text-slate-700">Alert frequency</div>
-              <Select
-                value={frequency}
-                onValueChange={setFrequency}
-                options={alertFrequencies}
-                ariaLabel="Listing alert frequency"
-              />
+            <div className="grid gap-2">
+              <Label>Search Alert Frequency</Label>
+              <Select value={frequency} onValueChange={setFrequency}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select frequency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="instantly">Instantly</SelectItem>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <button
-              className={`rounded-2xl border p-4 text-left ${sms ? "border-emerald-200 bg-emerald-50" : "border-slate-200 bg-white"}`}
+              className={`rounded-md border p-4 text-left ${sms ? "border-slate-200 bg-slate-50" : "border-slate-200 bg-white"}`}
               onClick={() => setSms(!sms)}
             >
               <div className="text-sm font-medium text-slate-900">SMS alerts</div>
               <div className="mt-1 text-sm text-slate-500">{sms ? "Enabled" : "Disabled"}</div>
             </button>
             <button
-              className={`rounded-2xl border p-4 text-left ${marketDigest ? "border-blue-200 bg-blue-50" : "border-slate-200 bg-white"}`}
+              className={`rounded-2xl border p-4 text-left transition-all ${marketDigest ? "border-slate-300 bg-slate-100" : "border-slate-200 bg-white"}`}
               onClick={() => setMarketDigest(!marketDigest)}
             >
               <div className="text-sm font-medium text-slate-900">Market digest</div>
