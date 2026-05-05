@@ -30,3 +30,11 @@ node_modules/
 .switchboard/*.db-shm
 .switchboard/*.db-wal
 # <<< Switchboard managed exclusions <<<
+
+# Local workspace junk
+/graphify-out/
+/workspace/
+/makato/
+*.tsbuildinfo
+.next/
+node_modules/
