@@ -32,7 +32,7 @@ const routeTitles: Record<RouteKey, string> = {
 
 export function ClientPortal() {
   const pathname = usePathname();
-  
+
   const activeRoute = useMemo<RouteKey>(() => {
     const route = pathname.replace(/^\//, "") as RouteKey;
     return routeTitles[route] ? route : "search";
@@ -53,10 +53,10 @@ export function ClientPortal() {
   });
   const [sortValue, setSortValue] = useState("default");
 
-  const { 
-    properties: allProperties, 
-    visitedIds, 
-    toggleInterested, 
+  const {
+    properties: allProperties,
+    visitedIds,
+    toggleInterested,
     toggleNotInterested,
     markVisited,
     savedSearches,
@@ -71,7 +71,7 @@ export function ClientPortal() {
   const [drawingMode, setDrawingMode] = useState(false);
   const [customBoundaryActive, setCustomBoundaryActive] = useState(false);
 
-  const selectedSavedSearch = useMemo(() => 
+  const selectedSavedSearch = useMemo(() =>
     savedSearches.find(s => s.id === selectedSavedSearchId),
     [savedSearches, selectedSavedSearchId]
   );
@@ -105,13 +105,13 @@ export function ClientPortal() {
       const matchesBeds = moreFilters.beds === "Any" || property.beds >= Number(moreFilters.beds.replace("+", ""));
       const matchesBaths = moreFilters.baths === "Any" || property.baths >= Number(moreFilters.baths.replace("+", ""));
       const matchesMatch = moreFilters.matchScore === "Any" || property.matchScore >= Number(moreFilters.matchScore.replace("+", ""));
-      
+
       const matchesYear =
         moreFilters.yearBuilt === "Any" ||
         (moreFilters.yearBuilt === "2015+" && property.yearBuilt >= 2015) ||
         (moreFilters.yearBuilt === "2020+" && property.yearBuilt >= 2020) ||
         (moreFilters.yearBuilt === "New build" && property.yearBuilt >= 2022);
-      
+
       const matchesLot =
         moreFilters.lot === "Any" ||
         (moreFilters.lot === "Small lot" && property.lot !== "N/A" && parseFloat(property.lot) <= 0.12) ||
@@ -171,10 +171,10 @@ export function ClientPortal() {
         <div className="flex flex-col h-screen overflow-hidden">
           <SearchHeader
             mode={
-              activeRoute === "my-searches" && selectedSavedSearchId 
-                ? "savedSearch" 
+              activeRoute === "my-searches" && selectedSavedSearchId
+                ? "savedSearch"
                 : ["matches", "interested", "not-interested", "recently-viewed"].includes(activeRoute)
-                  ? "board" 
+                  ? "board"
                   : "search"
             }
             title={activeRoute === "my-searches" ? (selectedSavedSearch?.name || "My Searches") : routeTitles[activeRoute]}
@@ -225,10 +225,10 @@ export function ClientPortal() {
                 selectedLocation={selectedLocation}
                 onSaveSearch={handleSaveSearch}
                 mode={
-                  activeRoute === "matches" 
-                    ? "board" 
-                    : activeRoute === "my-searches" 
-                      ? "savedSearch" 
+                  activeRoute === "matches"
+                    ? "board"
+                    : activeRoute === "my-searches"
+                      ? "savedSearch"
                       : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
                         ? "board"
                         : "search"
@@ -246,10 +246,10 @@ export function ClientPortal() {
             <div className="w-[55%] h-full">
               <MapPanel
                 mode={
-                  activeRoute === "matches" 
-                    ? "myMatches" 
-                    : (activeRoute === "my-searches" && selectedSavedSearch) 
-                      ? "savedSearch" 
+                  activeRoute === "matches"
+                    ? "myMatches"
+                    : (activeRoute === "my-searches" && selectedSavedSearch)
+                      ? "savedSearch"
                       : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
                         ? "board"
                         : "search"
@@ -280,7 +280,12 @@ export function ClientPortal() {
         open={filtersModalOpen}
         onClose={() => setFiltersModalOpen(false)}
         value={moreFilters as any}
-        onSave={setMoreFilters}
+        onSave={(next) => {
+          setMoreFilters((prev) => ({
+            ...prev,
+            ...next,
+          }));
+        }}
         isEditMode={activeRoute === "my-searches" && !!selectedSavedSearchId}
       />
       <PropertyDetailDialog
