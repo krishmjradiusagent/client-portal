@@ -19,6 +19,8 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@shadcn-space": "https://shadcnspace.com/r/{name}.json"
+    "@shadcn-space": "https://shadcnspace.com/r/{name}.json",
+    "@cardcn": "https://cardcn.dev/r/{name}.json",
+    "@delta": "https://deltacomponents.dev/r/{name}.json"
   }
 }

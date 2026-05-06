@@ -70,7 +70,7 @@ export function AdvancedFiltersSheet({ open, onClose, value, onSave, isEditMode 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Open Houses Only</Label>
-                  <p className="text-[11px] text-slate-500">Only show homes with upcoming open houses</p>
+                  <p className="text-[11px] text-slate-500">Only show homes with open houses</p>
                 </div>
                 <Switch 
                   checked={draft.openHouse !== "Any"} 
@@ -80,11 +80,11 @@ export function AdvancedFiltersSheet({ open, onClose, value, onSave, isEditMode 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>New Construction</Label>
-                  <p className="text-[11px] text-slate-500">Only show recently built homes</p>
+                  <p className="text-[11px] text-slate-500">Only show homes with new construction</p>
                 </div>
                 <Switch 
-                  checked={draft.yearBuilt === "New build"} 
-                  onCheckedChange={(checked) => setDraft(prev => ({ ...prev, yearBuilt: checked ? "New build" : "Any" }))} 
+                  checked={draft.yearBuilt === "New construction"} 
+                  onCheckedChange={(checked) => setDraft(prev => ({ ...prev, yearBuilt: checked ? "New construction" : "Any" }))} 
                 />
               </div>
             </div>

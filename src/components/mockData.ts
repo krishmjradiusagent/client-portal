@@ -27,7 +27,9 @@ export type Property = {
   yearBuilt: number;
   listedDate: string;
   matchScore: number;
-  interestStatus: string;
+  isNew?: boolean;
+  hasPriceCut?: boolean;
+  mlsStatus: string;
   status: PropertyStatus;
   type: string;
   image: string;
@@ -49,6 +51,14 @@ export type SavedSearch = {
   priceMin?: string;
   priceMax?: string;
   emailAlerts?: boolean;
+};
+
+export type Message = {
+  id: string;
+  content: string;
+  time: string;
+  isIncoming: boolean;
+  status?: "Delivered" | "Sent" | "Read";
 };
 
 export const locationSuggestions = [
@@ -115,7 +125,7 @@ export const moreFilterDefaults = {
 export const propertyTypeOptions = ["Any", "House", "Condo", "Townhome", "Duplex"];
 export const bedOptions = ["Any", "2+", "3+", "4+"];
 export const bathOptions = ["Any", "2+", "3+"];
-export const yearOptions = ["Any", "2015+", "2020+", "New build"];
+export const yearOptions = ["Any", "2015+", "2020+", "New construction"];
 export const hoaOptions = ["Any", "No HOA", "Under $300", "$300+"];
 export const openHouseOptions = ["Any", "This weekend", "Open now"];
 export const lotOptions = ["Any", "Small lot", "Medium lot", "Large lot"];
@@ -135,7 +145,8 @@ export const properties: Property[] = [
     yearBuilt: 2018,
     listedDate: "2024-05-01",
     matchScore: 96,
-    interestStatus: "New",
+    isNew: true,
+    mlsStatus: "ACT",
     status: "search",
     type: "Townhome",
     image: "/images/properties/prop-1-1.png",
@@ -163,7 +174,8 @@ export const properties: Property[] = [
     yearBuilt: 2015,
     listedDate: "2024-04-15",
     matchScore: 93,
-    interestStatus: "Price cut",
+    hasPriceCut: true,
+    mlsStatus: "ACT",
     status: "search",
     type: "House",
     image: "/images/properties/prop-2-1.png",
@@ -191,7 +203,7 @@ export const properties: Property[] = [
     yearBuilt: 2018,
     listedDate: "2024-05-02",
     matchScore: 98,
-    interestStatus: "Upcoming Open Houses",
+    mlsStatus: "CS",
     status: "search",
     type: "House",
     image: "/images/properties/prop-3-1.png",
@@ -219,7 +231,7 @@ export const properties: Property[] = [
     yearBuilt: 1948,
     listedDate: "2024-05-03",
     matchScore: 89,
-    interestStatus: "For Sale",
+    mlsStatus: "AC",
     status: "search",
     type: "House",
     image: "/images/properties/prop-4-1.png",
@@ -247,7 +259,7 @@ export const properties: Property[] = [
     yearBuilt: 2021,
     listedDate: "2024-05-04",
     matchScore: 92,
-    interestStatus: "New",
+    mlsStatus: "PND",
     status: "search",
     type: "Condo",
     image: "/images/properties/prop-5-1.png",
@@ -275,7 +287,8 @@ export const properties: Property[] = [
     yearBuilt: 2012,
     listedDate: "2024-04-20",
     matchScore: 85,
-    interestStatus: "For Sale",
+    isNew: true,
+    mlsStatus: "CS",
     status: "search",
     type: "House",
     image: "/images/properties/prop-6-1.png",
@@ -303,7 +316,8 @@ export const properties: Property[] = [
     yearBuilt: 2023,
     listedDate: "2024-05-05",
     matchScore: 97,
-    interestStatus: "New build",
+    isNew: true,
+    mlsStatus: "ACT",
     status: "search",
     type: "House",
     image: "/images/properties/prop-7-1.png",
@@ -331,7 +345,8 @@ export const properties: Property[] = [
     yearBuilt: 2019,
     listedDate: "2024-05-02",
     matchScore: 94,
-    interestStatus: "Price cut",
+    hasPriceCut: true,
+    mlsStatus: "ACT",
     status: "search",
     type: "Condo",
     image: "/images/properties/prop-8-1.png",

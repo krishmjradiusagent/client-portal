@@ -4,6 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import type { Property } from "./mockData";
+import { cn } from "@/lib/utils";
 
 type Props = {
   property: Property | null;
@@ -63,8 +64,66 @@ export function PropertyDetailDialog({ property, open, onClose, onLike, onDislik
           </div>
           <div className="space-y-4 p-5">
             <div className="flex items-center gap-2">
-              <Badge className="bg-emerald-600 text-white hover:bg-emerald-700">Match {property.matchScore}/100</Badge>
-              <Badge variant="secondary">{property.type}</Badge>
+              {(() => {
+                const isNew = property.isNew;
+                const isPriceCut = property.hasPriceCut;
+                const signalLabel = isPriceCut ? "PRICE CUT" : isNew ? "NEW" : null;
+                
+                const mlsStatusMap: Record<string, string> = {
+                  "ACT": "ACTIVE", "ACTIVE": "ACTIVE",
+                  "CS": "COMING SOON", "COMING SOON": "COMING SOON",
+                  "AUC": "UNDER CONTRACT", "AC": "UNDER CONTRACT", "ACTIVE UNDER CONTRACT": "UNDER CONTRACT",
+                  "PND": "PENDING", "PENDING": "PENDING",
+                  "CLOSED": "SOLD"
+                };
+                const mlsDisplayLabel = mlsStatusMap[property.mlsStatus] || "ACTIVE";
+
+                const getSignalStyles = () => {
+                  if (signalLabel === "NEW") return "bg-[#FFF7E0] text-[#6F4E00] border-[#F2D68A]";
+                  if (signalLabel === "PRICE CUT") return "bg-[#EAFBF2] text-[#067647] border-[#A7E8C4]";
+                  return "";
+                };
+
+                const getMlsStyles = (status: string) => {
+                  const s = mlsStatusMap[status] || "ACTIVE";
+                  if (s === "ACTIVE") return "bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]";
+                  if (s === "COMING SOON") return "bg-[#EFF6FF] text-[#1D4ED8] border-[#BFDBFE]";
+                  if (s === "UNDER CONTRACT") return "bg-[#FFFBEB] text-[#92400E] border-[#FDE68A]";
+                  if (s === "PENDING") return "bg-[#F5F3FF] text-[#6D28D9] border-[#DDD6FE]";
+                  return "bg-slate-100 text-slate-700 border-slate-200";
+                };
+
+                return (
+                  <>
+                    {signalLabel && (
+                      <Badge className={cn(
+                        "relative overflow-hidden px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border",
+                        getSignalStyles()
+                      )}>
+                        {signalLabel === "NEW" && (
+                          <div className="absolute inset-0 shiny pointer-events-none opacity-90 bg-[linear-gradient(110deg,transparent,35%,rgba(255,215,128,0.72),50%,rgba(255,245,190,0.58),65%,transparent)] bg-[length:200%_100%]" />
+                        )}
+                        {signalLabel === "PRICE CUT" && (
+                          <div className="absolute inset-0 shiny pointer-events-none opacity-90 bg-[linear-gradient(110deg,transparent,35%,rgba(52,211,153,0.34),50%,rgba(187,247,208,0.52),65%,transparent)] bg-[length:200%_100%]" />
+                        )}
+                        <span className="relative z-10">{signalLabel}</span>
+                      </Badge>
+                    )}
+                    <Badge className={cn(
+                      "px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border",
+                      getMlsStyles(property.mlsStatus)
+                    )}>
+                      {mlsDisplayLabel}
+                    </Badge>
+                  </>
+                );
+              })()}
+              <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 ml-auto">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5">
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                </svg>
+                {property.matchScore}% Match
+              </Badge>
             </div>
             <div>
               <div className="text-3xl font-semibold text-slate-900">${property.price.toLocaleString()}</div>

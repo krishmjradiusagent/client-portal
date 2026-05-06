@@ -12,6 +12,7 @@ import { AdvancedFiltersSheet } from "./AdvancedFiltersSheet";
 import { PropertyDetailDialog } from "./PropertyDetailDialog";
 import { ProfilePage } from "./ProfilePage";
 import { SettingsPage } from "./SettingsPage";
+import { MessagesPanel } from "./client-portal/MessagesPanel";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
 import { moreFilterDefaults } from "./mockData";
 import { usePropertyContext } from "./PropertyContext";
@@ -59,6 +60,7 @@ export function ClientPortal() {
     toggleInterested,
     toggleNotInterested,
     markVisited,
+    recentlyViewedIds,
     savedSearches,
     selectedSavedSearchId,
     addSavedSearch,
@@ -80,7 +82,11 @@ export function ClientPortal() {
   const baseRouteProperties = useMemo(() => {
     if (activeRoute === "interested") return allProperties.filter((p) => p.status === "interested");
     if (activeRoute === "not-interested") return allProperties.filter((p) => p.status === "notInterested");
-    if (activeRoute === "recently-viewed") return allProperties.filter((p) => visitedIds.has(p.id));
+    if (activeRoute === "recently-viewed") {
+      return recentlyViewedIds
+        .map(id => allProperties.find(p => p.id === id))
+        .filter((p): p is Property => !!p);
+    }
     if (activeRoute === "my-searches" && selectedSavedSearch) {
       return allProperties.filter(p => selectedSavedSearch.propertyIds.includes(p.id));
     }
@@ -167,6 +173,8 @@ export function ClientPortal() {
         <ProfilePage />
       ) : activeRoute === "settings" ? (
         <SettingsPage />
+      ) : activeRoute === "messages" ? (
+        <MessagesPanel />
       ) : (
         <div className="flex flex-col h-screen overflow-hidden">
           <SearchHeader
@@ -260,7 +268,10 @@ export function ClientPortal() {
                 customBoundaryActive={customBoundaryActive}
                 selectedLocation={selectedLocation}
                 mapLayer="Street"
-                onMarkerClick={(property) => setActivePropertyModal(property)}
+                onMarkerClick={(property) => {
+                  setActivePropertyModal(property);
+                  markVisited(property.id);
+                }}
                 onMapClick={() => {
                   if (drawingMode) {
                     setCustomBoundaryActive(true);
