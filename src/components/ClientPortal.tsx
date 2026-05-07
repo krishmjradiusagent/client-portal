@@ -12,7 +12,9 @@ import { AdvancedFiltersSheet } from "./AdvancedFiltersSheet";
 import { PropertyDetailDialog } from "./PropertyDetailDialog";
 import { ProfilePage } from "./ProfilePage";
 import { SettingsPage } from "./SettingsPage";
+import { HomeValuePage } from "./HomeValuePage";
 import { MessagesPanel } from "./client-portal/MessagesPanel";
+import { WillowFloatingAssistant, type WillowContext } from "./WillowFloatingAssistant";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
 import { moreFilterDefaults } from "./mockData";
 import { usePropertyContext } from "./PropertyContext";
@@ -65,7 +67,8 @@ export function ClientPortal() {
     selectedSavedSearchId,
     addSavedSearch,
     deleteSavedSearch,
-    updateSavedSearch
+    updateSavedSearch,
+    homeValueListings
   } = usePropertyContext();
 
   const [activePropertyModal, setActivePropertyModal] = useState<Property | null>(null);
@@ -90,8 +93,11 @@ export function ClientPortal() {
     if (activeRoute === "my-searches" && selectedSavedSearch) {
       return allProperties.filter(p => selectedSavedSearch.propertyIds.includes(p.id));
     }
+    if (activeRoute === "home-value") {
+      return [];
+    }
     return allProperties.filter((p) => p.status === "search");
-  }, [activeRoute, allProperties, visitedIds, selectedSavedSearch]);
+  }, [activeRoute, allProperties, visitedIds, selectedSavedSearch, homeValueListings]);
 
   const totalCount = baseRouteProperties.length;
 
@@ -173,11 +179,16 @@ export function ClientPortal() {
         <ProfilePage />
       ) : activeRoute === "settings" ? (
         <SettingsPage />
+      ) : activeRoute === "home-value" ? (
+        <HomeValuePage />
       ) : activeRoute === "messages" ? (
-        <MessagesPanel />
+        <div className="flex flex-col flex-1 h-[calc(100vh-18px)] overflow-hidden mb-[18px]">
+          <MessagesPanel />
+        </div>
       ) : (
-        <div className="flex flex-col h-screen overflow-hidden">
-          <SearchHeader
+        <div className="h-[100dvh] overflow-hidden flex flex-col">
+          <div className="shrink-0">
+            <SearchHeader
             mode={
               activeRoute === "my-searches" && selectedSavedSearchId
                 ? "savedSearch"
@@ -208,9 +219,10 @@ export function ClientPortal() {
             sortValue={sortValue}
             onSortChange={setSortValue}
           />
+          </div>
 
-          <div className="flex-1 flex overflow-hidden">
-            <div className="w-[45%] flex flex-col h-full overflow-hidden border-r border-slate-200">
+          <div className="grid grid-cols-[45%_55%] min-h-0 flex-1 overflow-hidden">
+            <div className="h-full min-h-0 overflow-y-auto overscroll-contain border-r border-slate-100 flex flex-col">
               <ResultsPanel
                 route={activeRoute}
                 properties={routeProperties}
@@ -249,9 +261,8 @@ export function ClientPortal() {
                       : routeTitles[activeRoute]
                 }
               />
-
             </div>
-            <div className="w-[55%] h-full">
+            <div className="relative h-full min-h-0 overflow-hidden">
               <MapPanel
                 mode={
                   activeRoute === "matches"
@@ -305,6 +316,9 @@ export function ClientPortal() {
         onClose={() => setActivePropertyModal(null)}
         onLike={handleLike}
         onDislike={handleDislike}
+      />
+      <WillowFloatingAssistant 
+        context={activeRoute as WillowContext} 
       />
     </>
   );

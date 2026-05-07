@@ -10,7 +10,6 @@ type XCardSize = "sm" | "small" | "default" | "lg" | "large"
 interface XCardProps {
   id: string
   caption?: ReactNode
-  children?: ReactNode
   className?: string
   size?: XCardSize
 }
@@ -24,7 +23,6 @@ function normalizeSize(size: XCardSize): "small" | "default" | "large" {
 export function XCard({
   id,
   caption,
-  children,
   className,
   size = "default",
 }: XCardProps) {
@@ -37,29 +35,54 @@ export function XCard({
   }
 
   return (
-    <div className={cn("x-card overflow-hidden rounded-2xl border bg-card text-card-foreground shadow-sm", sizeClasses[normalizedSize], className)}>
-      {id ? (
-        <div className="flex justify-center p-4">
-          <Tweet id={id} />
-        </div>
-      ) : (
-        <div className="p-0">
-          {children}
-        </div>
-      )}
+    <div className={cn("x-card my-6", sizeClasses[normalizedSize], className)}>
+      <div className="flex justify-center">
+        <Tweet id={id} />
+      </div>
       {caption && (
-        <div className="text-muted-foreground mt-2 px-4 pb-4 text-center text-sm">
+        <div className="text-muted-foreground mt-4 text-center text-sm">
           {caption}
         </div>
       )}
       <style jsx>{`
-        .x-card {
+        .x-card .react-tweet-theme {
           --tweet-container-margin: 0;
           --tweet-font-family: inherit;
           --tweet-font-color: hsl(var(--foreground));
-          --tweet-bg-color: transparent;
-          --tweet-bg-color-hover: transparent;
-          --tweet-border: none;
+          --tweet-bg-color: hsl(var(--card));
+          --tweet-bg-color-hover: hsl(var(--card));
+          --tweet-color-blue-secondary: hsl(var(--muted-foreground));
+          --tweet-color-blue-secondary-hover: hsl(var(--accent));
+          --tweet-font-color-secondary: hsl(var(--muted-foreground));
+          --tweet-quoted-bg-color-hover: hsl(var(--muted) / 0.3);
+          --tweet-border: 1px solid hsl(var(--border));
+          --tweet-skeleton-gradient: linear-gradient(
+            270deg,
+            hsl(var(--muted)),
+            hsl(var(--muted) / 0.8),
+            hsl(var(--muted) / 0.8),
+            hsl(var(--muted))
+          );
+          --tweet-color-red-primary: hsl(var(--destructive));
+          --tweet-color-red-primary-hover: hsl(var(--destructive) / 0.1);
+          --tweet-color-green-primary: hsl(var(--chart-2));
+          --tweet-color-green-primary-hover: hsl(var(--chart-2) / 0.1);
+          --tweet-twitter-icon-color: hsl(var(--foreground));
+          --tweet-verified-old-color: hsl(var(--muted-foreground));
+          --tweet-verified-blue-color: hsl(var(--primary));
+        }
+
+        .x-card .react-tweet-theme p {
+          font-size: inherit;
+          line-height: 1.3rem;
+        }
+
+        .x-card .react-tweet-theme p a {
+          @apply border-border hover:border-foreground border-b transition-[border-color];
+        }
+
+        .x-card .react-tweet-theme p a:hover {
+          text-decoration: none;
         }
       `}</style>
     </div>

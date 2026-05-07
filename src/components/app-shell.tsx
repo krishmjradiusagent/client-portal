@@ -13,7 +13,7 @@ import { PropertyProvider } from "@/components/PropertyContext"
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <PropertyProvider>
-      <div className="dark min-h-screen bg-background text-foreground">
+      <div className="dark h-[100dvh] overflow-hidden bg-background text-foreground">
       <SidebarProvider
         defaultOpen
         style={
@@ -25,7 +25,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       >
         <AppSidebar />
         <SidebarInset>
-          <main className="flex flex-col">{children}</main>
+          {children}
         </SidebarInset>
       </SidebarProvider>
     </div>

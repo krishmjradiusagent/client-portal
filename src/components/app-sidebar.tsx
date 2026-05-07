@@ -16,6 +16,8 @@ import {
   Heart,
   X,
   History,
+  Home,
+  Plus,
 } from "lucide-react"
 
 import {
@@ -56,43 +58,14 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence, type Transition } from "framer-motion"
 import { AuroraBars } from "@/components/ui/aurora-bars"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { usePropertyContext } from "./PropertyContext"
 
 const transition: Transition = { duration: 0.5, ease: [0.32, 0.72, 0, 1] }
-
-const searchesGroup = {
-  label: "SEARCHES",
-  items: [
-    { title: "Search", url: "/search", icon: Search },
-    { title: "My Matches", url: "/matches", icon: Sparkles },
-    { title: "My Searches", url: "/my-searches", icon: LayoutGrid },
-  ],
-} as const
-
-const engagementGroup = {
-  label: "ENGAGEMENT",
-  items: [
-    { title: "Interested", url: "/interested", icon: Heart, badge: "0" },
-    { title: "Not Interested", url: "/not-interested", icon: X, badge: "0" },
-    { title: "Recently Viewed", url: "/recently-viewed", icon: History },
-  ],
-} as const
-
-const accountGroup = {
-  label: "ACCOUNT",
-  items: [
-    { title: "My Profile", url: "/profile", icon: User },
-    { title: "Settings", url: "/settings", icon: Settings2 },
-    { title: "Logout", url: "/logout", icon: LogOut },
-  ],
-} as const
-
-
-
-import { usePropertyContext } from "./PropertyContext"
 
 function isActive(pathname: string, url: string) {
   return pathname === url || pathname.startsWith(`${url}/`)
@@ -107,9 +80,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     recentlyViewedCount,
     savedSearches,
     selectedSavedSearchId,
-    setSelectedSavedSearchId
+    setSelectedSavedSearchId,
+    homeValueListings,
+    activeHomeValueId,
+    setActiveHomeValueId
   } = usePropertyContext()
   const isCollapsed = state === "collapsed"
+
+  const searchesGroup = {
+    label: "SEARCHES",
+    items: [
+      { title: "Search", url: "/search", icon: Search },
+      { title: "My Matches", url: "/matches", icon: Sparkles },
+      { title: "Home Value", url: "/home-value", icon: Home },
+      { title: "My Searches", url: "/my-searches", icon: LayoutGrid },
+    ],
+  } as const
+
+  const engagementGroup = { label: "ENGAGEMENT" } as const
+
+  const accountGroup = {
+    label: "ACCOUNT",
+    items: [
+      { title: "My Profile", url: "/profile", icon: User },
+      { title: "Settings", url: "/settings", icon: Settings2 },
+      { title: "Logout", url: "/logout", icon: LogOut },
+    ],
+  } as const
 
   const engagementItems = [
     { title: "Interested", url: "/interested", icon: Heart, badge: interestedCount.toString() },
@@ -182,6 +179,52 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {searchesGroup.items.map((item) => {
+                if (item.title === "Home Value") {
+                  return (
+                    <Collapsible key={item.title} defaultOpen={homeValueListings.length > 0} className="group/collapsible">
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9">
+                            <item.icon className="size-4" />
+                            <span>{item.title}</span>
+                            <ChevronsUpDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <SidebarMenuAction asChild className="hover:bg-slate-100 rounded-lg">
+                          <Link href="/home-value?add=true">
+                            <Plus className="size-3.5" />
+                          </Link>
+                        </SidebarMenuAction>
+                        <CollapsibleContent>
+                          <SidebarMenuSub className="mr-0 pr-0">
+                            {homeValueListings.map((listing) => (
+                              <SidebarMenuSubItem key={listing.id}>
+                                <SidebarMenuSubButton 
+                                  asChild 
+                                  isActive={activeHomeValueId === listing.id && isActive(pathname, item.url)}
+                                  onClick={() => setActiveHomeValueId(listing.id)}
+                                  className="h-8 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+                                >
+                                  <Link href={`${item.url}?id=${listing.id}`}>
+                                    <span className="truncate">{listing.address.split(',')[0]}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                            {homeValueListings.length === 0 && (
+                              <SidebarMenuSubItem>
+                                <SidebarMenuSubButton asChild className="h-8 text-[10px] text-sidebar-foreground/30 px-3 font-medium">
+                                  <Link href="/home-value">No homes added yet</Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            )}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
+                }
+
                 if (item.title === "My Searches") {
                   return (
                     <Collapsible key={item.title} defaultOpen className="group/collapsible">
@@ -215,6 +258,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </Collapsible>
                   );
                 }
+
                 return (
                   <SidebarMenuItem key={item.title}>
                     <motion.div whileTap={{ scale: 0.97 }} transition={transition}>

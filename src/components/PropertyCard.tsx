@@ -16,9 +16,10 @@ type Props = {
   onLike: () => void;
   onDislike: () => void;
   route: string;
+  isHomeValue?: boolean;
 };
 
-export function PropertyCard({ property, onOpen, onLike, onDislike, route }: Props) {
+export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHomeValue }: Props) {
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const liked = property.status === "interested";
   const disliked = property.status === "notInterested";
@@ -27,7 +28,7 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route }: Pro
   
   // Signal Logic (Max 1)
   const signalLabel = isPriceCut ? "PRICE CUT" : isNew ? "NEW" : null;
-  const showSignal = !!signalLabel;
+  const showSignal = !!signalLabel && !isHomeValue;
 
   // MLS Status Mapping (Exactly 1)
   const mlsStatusMap: Record<string, string> = {
@@ -167,25 +168,36 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route }: Pro
             )}
 
             {/* MLS Status Badge (Required) */}
-            <Badge variant="secondary" className={cn(
-              "px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border flex-shrink-0",
-              getMlsStyles(property.mlsStatus)
-            )}>
-              <span className="whitespace-nowrap">{mlsDisplayLabel}</span>
-            </Badge>
+            {!isHomeValue && (
+              <Badge variant="secondary" className={cn(
+                "px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border flex-shrink-0",
+                getMlsStyles(property.mlsStatus)
+              )}>
+                <span className="whitespace-nowrap">{mlsDisplayLabel}</span>
+              </Badge>
+            )}
+            
+            {isHomeValue && (
+              <Badge variant="secondary" className="bg-slate-900 text-white border-none px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider flex-shrink-0">
+                <span className="whitespace-nowrap">HOME VALUE</span>
+              </Badge>
+            )}
           </div>
           
-          <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 pointer-events-auto ml-auto">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-            </svg>
-            {property.matchScore}%
-          </Badge>
+          {!isHomeValue && (
+            <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 pointer-events-auto ml-auto">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              </svg>
+              {property.matchScore}%
+            </Badge>
+          )}
         </div>
 
         {/* Floating Price Badge */}
         <div className="absolute bottom-3 right-3 pointer-events-none">
-          <Badge variant="secondary" className="bg-white/95 text-[#4F46E5] border-none px-3 py-1.5 text-sm font-bold shadow-sm pointer-events-auto">
+          <Badge variant="secondary" className="bg-white/95 text-[#4F46E5] border-none px-3 py-1.5 text-sm font-bold shadow-sm pointer-events-auto flex items-center gap-1.5">
+            {isHomeValue && <span className="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Est. Value</span>}
             {formattedPrice}
           </Badge>
         </div>

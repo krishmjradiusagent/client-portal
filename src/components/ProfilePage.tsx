@@ -6,21 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Badge } from "./ui/badge";
-import { Separator } from "./ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import Link from "next/link";
 import { usePropertyContext } from "./PropertyContext";
-import { XCard } from "./ui/x-card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { ThumbsUp, ThumbsDown, Minus, Trash2, Mail, Phone, MessageCircle, Building2, UserRound } from "lucide-react";
-import { AddressAutocomplete } from "./ui/address-autocomplete";
+import { 
+  ThumbsUp, ThumbsDown, Minus, Mail, Phone, MessageCircle, 
+  Building2, UserRound, MapPin, Bed, Bath, Sparkles, 
+  Settings2, Activity, Search, Heart
+} from "lucide-react";
 
 export function ProfilePage() {
   const { 
@@ -29,295 +23,301 @@ export function ProfilePage() {
     properties,
     profileData,
     updateProfileData,
-    commutes,
-    addCommute,
-    removeCommute
   } = usePropertyContext();
 
   const neutralCount = properties.filter(p => p.status === "search").length;
 
-  const [parkPreference, setParkPreference] = useState<"like" | "dislike" | "neutral" | null>(null);
+  const [preferences, setPreferences] = useState<Record<string, "like" | "dislike" | "neutral">>({
+    parks: "neutral",
+    openFloorPlan: "neutral",
+    naturalLight: "neutral",
+    largeYard: "neutral",
+    quietNeighborhood: "neutral"
+  });
 
-  const [commuteAddress, setCommuteAddress] = useState("");
-  const [commuteType, setCommuteType] = useState("drive");
-  const [commuteError, setCommuteError] = useState("");
-
-  const handleAddCommute = () => {
-    if (!commuteAddress.trim()) {
-      setCommuteError("Enter an address first.");
-      return;
-    }
-    setCommuteError("");
-    addCommute({ address: commuteAddress, type: commuteType });
-    setCommuteAddress("");
-  };
-
-  const handleRemoveCommute = (id: string) => {
-    removeCommute(id);
+  const updatePreference = (key: string, val: "like" | "dislike" | "neutral") => {
+    setPreferences(prev => ({ ...prev, [key]: val }));
   };
 
   return (
-    <div className="bg-background px-6 py-6">
-      <div className="w-full max-w-none space-y-8 pb-24">
-        <div className="w-full">
-          <h1 className="text-3xl font-bold tracking-tight">My Profile</h1>
-          <p className="text-muted-foreground">
-            Manage your search preferences, commute settings, and portal details.
-          </p>
+    <div className="bg-[#f8fafc] min-h-full px-4 sm:px-8 py-8 overflow-y-auto">
+      <div className="mx-auto w-full max-w-6xl space-y-8 pb-24">
+        {/* Header */}
+        <div className="w-full flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">My Profile</h1>
+            <p className="text-slate-500 mt-1 text-sm">
+              Manage your personal information, contact preferences, and search criteria.
+            </p>
+          </div>
         </div>
 
-        <div className="grid w-full grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_400px]">
-          {/* Left column */}
-          <div className="min-w-0 space-y-6">
-            {/* 1. Contact details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Contact details</CardTitle>
+        <div className="grid w-full grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_380px]">
+          {/* Left Column: Main Content */}
+          <div className="min-w-0 space-y-8">
+            
+            {/* Context Card: Search Summary */}
+            <Card className="border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center gap-3">
+                <div className="p-2 bg-primary/10 text-primary rounded-md">
+                  <Search className="h-4 w-4" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-slate-900">Current Search Context</h2>
+                  <p className="text-xs text-slate-500">Your primary home search criteria</p>
+                </div>
+              </div>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Location</p>
+                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400" /> San Francisco
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Price Range</p>
+                    <div className="text-sm font-semibold text-slate-700">$1M - $2.5M</div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Beds</p>
+                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <Bed className="h-3.5 w-3.5 text-slate-400" /> 3+ Beds
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Baths</p>
+                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                      <Bath className="h-3.5 w-3.5 text-slate-400" /> 2+ Baths
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Details */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg">Contact Information</CardTitle>
+                <CardDescription>How your agent and the portal will reach you.</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={profileData.name} onChange={(e) => updateProfileData({ name: e.target.value })} />
+                  <Label htmlFor="name" className="text-slate-600">Full Name</Label>
+                  <Input id="name" value={profileData.name} onChange={(e) => updateProfileData({ name: e.target.value })} className="bg-slate-50" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={profileData.email} onChange={(e) => updateProfileData({ email: e.target.value })} />
+                  <Label htmlFor="email" className="text-slate-600">Email Address</Label>
+                  <Input id="email" value={profileData.email} onChange={(e) => updateProfileData({ email: e.target.value })} className="bg-slate-50" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={profileData.phone} onChange={(e) => updateProfileData({ phone: e.target.value })} />
+                  <Label htmlFor="phone" className="text-slate-600">Phone Number</Label>
+                  <Input id="phone" value={profileData.phone} onChange={(e) => updateProfileData({ phone: e.target.value })} className="bg-slate-50" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Preferred contact method</Label>
+                  <Label className="text-slate-600">Preferred Contact Method</Label>
                   <ToggleGroup
                     type="single"
                     value={profileData.contactMethod}
                     onValueChange={(val) => {
                       if (val) updateProfileData({ contactMethod: val });
                     }}
-                    className="justify-start"
+                    className="justify-start bg-slate-50 p-1 rounded-md border"
                   >
-                    <ToggleGroupItem value="email" aria-label="Email">Email</ToggleGroupItem>
-                    <ToggleGroupItem value="text" aria-label="Text">Text</ToggleGroupItem>
-                    <ToggleGroupItem value="phone" aria-label="Phone">Phone</ToggleGroupItem>
+                    <ToggleGroupItem value="email" aria-label="Email" className="data-[state=on]:bg-white data-[state=on]:shadow-sm">Email</ToggleGroupItem>
+                    <ToggleGroupItem value="text" aria-label="Text" className="data-[state=on]:bg-white data-[state=on]:shadow-sm">Text</ToggleGroupItem>
+                    <ToggleGroupItem value="phone" aria-label="Phone" className="data-[state=on]:bg-white data-[state=on]:shadow-sm">Phone</ToggleGroupItem>
                   </ToggleGroup>
                 </div>
               </CardContent>
             </Card>
 
-            {/* 2. Search preferences */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Search preferences</CardTitle>
-                <CardDescription>Tell us what matters. Your feedback helps tune future matches.</CardDescription>
+            {/* Detailed Search Preferences */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader className="pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                  <Settings2 className="h-5 w-5 text-slate-400" />
+                  <CardTitle className="text-lg">Property Preferences</CardTitle>
+                </div>
+                <CardDescription>
+                  Rate these features to help us understand your lifestyle needs. 
+                  Your agent uses this to fine-tune your personalized matches.
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col justify-between gap-4 rounded-lg border p-4 sm:flex-row sm:items-center bg-muted/30">
-                  <div className="space-y-1">
-                    <p className="font-medium">Near parks</p>
-                    <p className="text-sm text-muted-foreground">Homes close to parks, trails, or green space.</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant={parkPreference === "like" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setParkPreference("like")}
-                    >
-                      <ThumbsUp className="mr-2 h-4 w-4" />
-                      Like
-                    </Button>
-                    <Button
-                      variant={parkPreference === "neutral" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setParkPreference("neutral")}
-                    >
-                      <Minus className="mr-2 h-4 w-4" />
-                      Neutral
-                    </Button>
-                    <Button
-                      variant={parkPreference === "dislike" ? "destructive" : "outline"}
-                      size="sm"
-                      onClick={() => setParkPreference("dislike")}
-                    >
-                      <ThumbsDown className="mr-2 h-4 w-4" />
-                      Dislike
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 3. Commutes */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Commutes</CardTitle>
-                <CardDescription>Add locations that matter so listings can show realistic commute context.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="rounded-md bg-muted p-4 text-sm">
-                  Add a location to calculate commute time from any listing.
-                </div>
-                
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                  <div className="flex-1 space-y-2">
-                    <Label htmlFor="commute-address" className="sr-only">Address</Label>
-                    <AddressAutocomplete
-                      value={commuteAddress}
-                      onChange={(val) => {
-                        setCommuteAddress(val);
-                        if (commuteError) setCommuteError("");
-                      }}
-                      placeholder="Work, school, gym, or custom address"
-                    />
-                    {commuteError && <p className="text-sm text-destructive">{commuteError}</p>}
-                  </div>
-                  <div className="w-full sm:w-40">
-                    <Select value={commuteType} onValueChange={setCommuteType}>
-                      <SelectTrigger aria-label="Commute type">
-                        <SelectTrigger aria-label="Commute type">
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="drive">Drive</SelectItem>
-                        <SelectItem value="walk">Walk</SelectItem>
-                        <SelectItem value="transit">Transit</SelectItem>
-                        <SelectItem value="bike">Bike</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button onClick={handleAddCommute} className="w-full sm:w-auto">Add commute</Button>
-                </div>
-
-                {commutes.length > 0 && (
-                  <div className="space-y-4">
-                    <Separator />
-                    <div className="space-y-3">
-                      {commutes.map((commute) => (
-                        <div key={commute.id} className="flex items-center justify-between rounded-md border p-3">
-                          <div className="flex items-center gap-3">
-                            <span className="font-medium">{commute.address}</span>
-                            <Badge variant="secondary" className="capitalize">{commute.type}</Badge>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveCommute(commute.id)}
-                            aria-label="Remove commute"
-                            className="text-muted-foreground hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+              <CardContent className="p-0 divide-y divide-slate-100">
+                {[
+                  { id: "parks", label: "Near parks", desc: "Homes close to parks, trails, or green space." },
+                  { id: "openFloorPlan", label: "Open floor plan", desc: "Spacious layout with connected living areas." },
+                  { id: "naturalLight", label: "Natural light", desc: "Large windows and bright, sunlit rooms." },
+                  { id: "largeYard", label: "Large yard", desc: "Ample outdoor space for activities or gardening." },
+                  { id: "quietNeighborhood", label: "Quiet neighborhood", desc: "Low traffic streets and peaceful surroundings." },
+                ].map((pref) => (
+                  <div key={pref.id} className="flex flex-col justify-between gap-4 p-6 sm:flex-row sm:items-center hover:bg-slate-50/50 transition-colors">
+                    <div className="space-y-1">
+                      <p className="font-medium text-slate-900">{pref.label}</p>
+                      <p className="text-sm text-slate-500">{pref.desc}</p>
+                    </div>
+                    <div className="flex gap-2 shrink-0 bg-slate-100 p-1 rounded-lg">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updatePreference(pref.id, "like")}
+                        className={`transition-all h-8 px-3 rounded-md ${preferences[pref.id] === "like" ? "bg-white text-emerald-600 shadow-sm hover:text-emerald-700 hover:bg-white" : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"}`}
+                      >
+                        <ThumbsUp className="mr-1.5 h-3.5 w-3.5" />
+                        Like
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updatePreference(pref.id, "neutral")}
+                        className={`transition-all h-8 px-3 rounded-md ${preferences[pref.id] === "neutral" ? "bg-white text-slate-900 shadow-sm hover:text-slate-900 hover:bg-white" : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"}`}
+                      >
+                        <Minus className="mr-1.5 h-3.5 w-3.5" />
+                        Neutral
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updatePreference(pref.id, "dislike")}
+                        className={`transition-all h-8 px-3 rounded-md ${preferences[pref.id] === "dislike" ? "bg-white text-rose-600 shadow-sm hover:text-rose-700 hover:bg-white" : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"}`}
+                      >
+                        <ThumbsDown className="mr-1.5 h-3.5 w-3.5" />
+                        Dislike
+                      </Button>
                     </div>
                   </div>
-                )}
+                ))}
               </CardContent>
             </Card>
           </div>
 
-          {/* Right column / Rail */}
-          <aside className="min-w-0 space-y-6 xl:sticky xl:top-6 self-start">
-            {/* 5. Your agent */}
-            <XCard className="profile-agent-xcard border-none bg-transparent p-0 shadow-none">
-              <div className="rounded-2xl border bg-card shadow-md transition-all duration-300 hover:shadow-lg">
-                <div className="profile-agent-xcard__header relative overflow-hidden rounded-t-2xl bg-gradient-to-b from-primary/5 to-transparent p-6">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="profile-agent-xcard__avatar h-14 w-14 border-2 border-background shadow-sm">
-                      <AvatarImage src="" alt="Scott Kato" />
-                      <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">SK</AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-xl tracking-tight">Scott Kato</h3>
-                        <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none text-[10px] h-4 px-1.5 uppercase tracking-tighter">Your Agent</Badge>
-                      </div>
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-                        <Building2 className="h-3 w-3" />
-                        Circle Real Estate
-                      </p>
+          {/* Right Column: Sticky Rail */}
+          <aside className="min-w-0 space-y-6 lg:sticky lg:top-8 self-start max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar pb-8">
+            
+            {/* Agent Context Card */}
+            <Card className="border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-slate-900 px-6 py-6 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <Building2 className="w-32 h-32 transform translate-x-8 -translate-y-8" />
+                </div>
+                <div className="relative z-10 flex items-center gap-4">
+                  <Avatar className="h-16 w-16 border-2 border-white shadow-md">
+                    <AvatarImage src="" alt="Scott Kato" />
+                    <AvatarFallback className="bg-slate-800 text-white font-bold text-xl">SK</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <Badge className="bg-white/20 hover:bg-white/20 text-white border-none text-[10px] h-5 px-2 uppercase tracking-wider mb-1.5 font-semibold">Your Agent</Badge>
+                    <h3 className="font-bold text-xl tracking-tight leading-none">Scott Kato</h3>
+                    <p className="text-sm font-medium text-slate-300 mt-1 flex items-center gap-1.5">
+                      Circle Real Estate
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <CardContent className="p-6 space-y-5">
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" size="sm" className="w-full gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <Mail className="h-4 w-4 text-slate-400" />
+                    Email
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    Call
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-slate-600">
+                    <div className="p-2 rounded-md bg-slate-100 text-slate-500">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400 font-medium">Direct Line</p>
+                      <span className="font-semibold text-slate-700">(512) 555-0182</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-slate-600">
+                    <div className="p-2 rounded-md bg-slate-100 text-slate-500">
+                      <UserRound className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-400 font-medium">Role</p>
+                      <span className="font-semibold text-slate-700">Real Estate Agent</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="p-6 pt-0 space-y-5">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" size="sm" className="profile-agent-xcard__action w-full gap-2 bg-background/50 hover:bg-primary/5 hover:text-primary border-primary/10 transition-colors">
-                      <Mail className="h-3.5 w-3.5" />
-                      Email
-                    </Button>
-                    <Button variant="outline" size="sm" className="profile-agent-xcard__action w-full gap-2 bg-background/50 hover:bg-primary/5 hover:text-primary border-primary/10 transition-colors">
-                      <Phone className="h-3.5 w-3.5" />
-                      Phone
-                    </Button>
-                  </div>
-
-                  <div className="space-y-2.5">
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground/80">
-                      <div className="p-1.5 rounded-md bg-muted/50">
-                        <Phone className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="font-medium tracking-tight">(512) 555-0182</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground/80">
-                      <div className="p-1.5 rounded-md bg-muted/50">
-                        <UserRound className="h-3.5 w-3.5" />
-                      </div>
-                      <span className="font-medium tracking-tight">Real Estate Agent</span>
-                    </div>
-                  </div>
-                  
-                  <Button className="w-full h-11 font-semibold shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all active:scale-[0.98]">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Message Scott
-                  </Button>
-                </div>
-              </div>
-            </XCard>
-
-            {/* 4. Home feedback */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Home feedback</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span>Interested homes</span>
-                    <Badge variant="secondary">{interestedCount}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Not interested</span>
-                    <Badge variant="outline">{notInterestedCount}</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Neutral</span>
-                    <Badge variant="ghost">{neutralCount}</Badge>
-                  </div>
-                </div>
-                <Button asChild variant="outline" className="w-full">
-                  <Link href="/interested">View home feedback</Link>
+                <Button className="w-full h-11 font-semibold">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Message Scott
                 </Button>
               </CardContent>
             </Card>
 
-            {/* 6. Match tuning */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Match tuning</CardTitle>
+            {/* Interaction Feedback Summary */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-base">Home Feedback</CardTitle>
+                </div>
+                <CardDescription className="text-xs">
+                  Your property ratings help us refine the recommendations you see.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Your likes, dislikes, and commute locations help refine which homes appear first.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary">Parks</Badge>
-                  <Badge variant="secondary">Commute</Badge>
-                  <Badge variant="secondary">Saved searches</Badge>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between group">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Heart className="h-4 w-4 text-rose-500" />
+                      <span>Interested</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-rose-50 text-rose-600 hover:bg-rose-100 border-none">{interestedCount}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between group">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <ThumbsDown className="h-4 w-4 text-slate-400" />
+                      <span>Not interested</span>
+                    </div>
+                    <Badge variant="outline" className="text-slate-500">{notInterestedCount}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between group">
+                    <div className="flex items-center gap-2 text-sm text-slate-600">
+                      <Minus className="h-4 w-4 text-slate-400" />
+                      <span>Undecided</span>
+                    </div>
+                    <Badge variant="ghost" className="text-slate-500 bg-slate-50">{neutralCount}</Badge>
+                  </div>
+                </div>
+                <Button asChild variant="outline" className="w-full text-sm h-9">
+                  <Link href="/interested">Review feedback history</Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Match Tuning Card */}
+            <Card className="border-slate-200 shadow-sm bg-gradient-to-br from-white to-slate-50">
+              <CardContent className="p-6 space-y-5">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-slate-900 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      Match Calibration
+                    </span>
+                    <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none font-bold">84%</Badge>
+                  </div>
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 inset-shadow-sm">
+                    <div className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full" style={{ width: "84%" }} />
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed pt-1">
+                    Your profile completeness and consistent feedback powers a highly accurate match algorithm.
+                  </p>
                 </div>
               </CardContent>
             </Card>
+
           </aside>
         </div>
       </div>

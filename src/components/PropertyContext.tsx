@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
-import { properties as initialProperties, initialSavedSearches, type Property, type PropertyStatus, type SavedSearch, type Message } from "./mockData";
+import { properties as initialProperties, initialSavedSearches, initialHomeValueListings, type Property, type PropertyStatus, type SavedSearch, type Message, type HomeValueListing } from "./mockData";
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -55,12 +55,15 @@ type PropertyContextType = {
   recentlyViewedIds: string[];
   profileData: { name: string; email: string; phone: string; contactMethod: string };
   updateProfileData: (data: Partial<{ name: string; email: string; phone: string; contactMethod: string }>) => void;
-  commutes: { id: string; address: string; type: string }[];
-  addCommute: (commute: { address: string; type: string }) => void;
-  removeCommute: (id: string) => void;
   interestedCount: number;
   notInterestedCount: number;
   recentlyViewedCount: number;
+  homeValueListings: HomeValueListing[];
+  addHomeValueListing: (listing: HomeValueListing) => void;
+  removeHomeValueListing: (id: string) => void;
+  updateHomeValueListing: (id: string, updates: Partial<HomeValueListing>) => void;
+  activeHomeValueId: string | null;
+  setActiveHomeValueId: (id: string | null) => void;
 };
 
 const PropertyContext = createContext<PropertyContextType | undefined>(undefined);
@@ -78,7 +81,8 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     phone: "(512) 555-0148",
     contactMethod: "email",
   });
-  const [commutes, setCommutes] = useState<{ id: string; address: string; type: string }[]>([]);
+  const [homeValueListings, setHomeValueListings] = useState<HomeValueListing[]>(initialHomeValueListings);
+  const [activeHomeValueId, setActiveHomeValueId] = useState<string | null>(initialHomeValueListings[0]?.id || null);
 
   const toggleInterested = useCallback((propertyId: string) => {
     setProperties((current) =>
@@ -126,13 +130,18 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   const updateProfileData = useCallback((data: Partial<typeof profileData>) => {
     setProfileData((prev) => ({ ...prev, ...data }));
   }, []);
-
-  const addCommute = useCallback((commute: { address: string; type: string }) => {
-    setCommutes((prev) => [...prev, { id: Date.now().toString(), ...commute }]);
+  
+  const addHomeValueListing = useCallback((listing: HomeValueListing) => {
+    setHomeValueListings((prev) => [listing, ...prev]);
+    setActiveHomeValueId(listing.id);
   }, []);
 
-  const removeCommute = useCallback((id: string) => {
-    setCommutes((prev) => prev.filter((c) => c.id !== id));
+  const removeHomeValueListing = useCallback((id: string) => {
+    setHomeValueListings((prev) => prev.filter((l) => l.id !== id));
+  }, []);
+
+  const updateHomeValueListing = useCallback((id: string, updates: Partial<HomeValueListing>) => {
+    setHomeValueListings((prev) => prev.map((l) => l.id === id ? { ...l, ...updates } : l));
   }, []);
 
   const addSavedSearch = useCallback((search: SavedSearch) => {
@@ -178,12 +187,15 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
         recentlyViewedIds,
         profileData,
         updateProfileData,
-        commutes,
-        addCommute,
-        removeCommute,
         interestedCount: counts.interested,
         notInterestedCount: counts.notInterested,
         recentlyViewedCount: counts.visited,
+        homeValueListings,
+        addHomeValueListing,
+        removeHomeValueListing,
+        updateHomeValueListing,
+        activeHomeValueId,
+        setActiveHomeValueId,
       }}
     >
       {children}

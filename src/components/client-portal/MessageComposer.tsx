@@ -36,8 +36,8 @@ export function MessageComposer({ onSend }: MessageComposerProps) {
   }, [message]);
 
   return (
-    <div className="border-t bg-background px-4 pt-4 pb-[calc(theme(spacing.6)+env(safe-area-inset-bottom))] shrink-0 z-20">
-      <div className="flex items-end gap-3 max-w-[1120px] mx-auto w-full relative">
+    <div className="border-t bg-background px-4 pt-4 pb-[18px] shrink-0 z-20">
+      <div className="flex items-end gap-3 w-full relative">
         <Button
           asChild
           variant="secondary"

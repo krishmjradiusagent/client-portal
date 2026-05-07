@@ -61,6 +61,22 @@ export type Message = {
   status?: "Delivered" | "Sent" | "Read";
 };
 
+export type HomeValueListing = {
+  id: string;
+  address: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  imageUrl?: string;
+  estimate?: number;
+  price?: number;
+  beds?: number;
+  baths?: number;
+  sqft?: number;
+  status?: string;
+  lastUpdated?: string;
+};
+
 export const locationSuggestions = [
   "All areas",
   "Downtown Austin",
@@ -380,5 +396,36 @@ export const initialSavedSearches: SavedSearch[] = [
     frequency: "Daily",
     updatedAt: "Yesterday",
     propertyIds: ["prop-2", "prop-3"]
+  }
+];
+
+export const initialHomeValueListings: HomeValueListing[] = [
+  {
+    id: "hv-1",
+    address: "1205 E 7th St",
+    city: "Austin",
+    state: "TX",
+    zip: "78702",
+    imageUrl: "/images/properties/prop-5-1.png",
+    estimate: 645000,
+    beds: 2,
+    baths: 2,
+    sqft: 1150,
+    status: "Off Market",
+    lastUpdated: "2 days ago"
+  },
+  {
+    id: "hv-2",
+    address: "2101 S Congress Ave",
+    city: "Austin",
+    state: "TX",
+    zip: "78704",
+    imageUrl: "/images/properties/prop-1-1.png",
+    estimate: 895000,
+    beds: 3,
+    baths: 2,
+    sqft: 1824,
+    status: "Off Market",
+    lastUpdated: "5 days ago"
   }
 ];

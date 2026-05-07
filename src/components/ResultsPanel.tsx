@@ -68,8 +68,8 @@ export function ResultsPanel({
   const visibleCount = properties.length;
 
   return (
-    <div className="flex-1 border-r border-slate-200 bg-slate-50 flex flex-col h-full overflow-hidden">
-      <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 border-r border-slate-200 bg-slate-50 flex flex-col h-full">
+      <div className="flex-1">
         {/* Page Title Row (Left Column) */}
 
         <div className="p-5">
@@ -83,6 +83,7 @@ export function ResultsPanel({
               onLike={() => onLike(property)}
               onDislike={() => onDislike(property)}
               route={route}
+              isHomeValue={route === "home-value"}
             />
           ))}
         </div>
