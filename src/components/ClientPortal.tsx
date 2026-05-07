@@ -13,6 +13,7 @@ import { PropertyDetailDialog } from "./PropertyDetailDialog";
 import { ProfilePage } from "./ProfilePage";
 import { SettingsPage } from "./SettingsPage";
 import { HomeValuePage } from "./HomeValuePage";
+import { PropertyDetailPage } from "./PropertyDetailPage";
 import { MessagesPanel } from "./client-portal/MessagesPanel";
 import { WillowFloatingAssistant, type WillowContext } from "./WillowFloatingAssistant";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
@@ -64,7 +65,9 @@ export function ClientPortal() {
     addSavedSearch,
     deleteSavedSearch,
     updateSavedSearch,
-    homeValueListings
+    homeValueListings,
+    selectedPropertyId,
+    setSelectedPropertyId
   } = usePropertyContext();
 
   const [activePropertyModal, setActivePropertyModal] = useState<Property | null>(null);
@@ -188,6 +191,8 @@ export function ClientPortal() {
         <div className="flex flex-col flex-1 h-[calc(100vh-18px)] overflow-hidden mb-[18px]">
           <MessagesPanel />
         </div>
+      ) : selectedPropertyId ? (
+        <PropertyDetailPage />
       ) : (
         <div className="h-[100dvh] overflow-hidden flex flex-col">
           <div className="shrink-0">
@@ -235,7 +240,7 @@ export function ClientPortal() {
                 savedSearches={savedSearches}
                 selectedSavedSearch={selectedSavedSearch}
                 onOpenProperty={(property) => {
-                  setActivePropertyModal(property);
+                  setSelectedPropertyId(property.id);
                   markVisited(property.id);
                 }}
                 onLike={handleLike}
@@ -283,7 +288,7 @@ export function ClientPortal() {
                 selectedLocation={selectedLocation}
                 mapLayer="Street"
                 onMarkerClick={(property) => {
-                  setActivePropertyModal(property);
+                  setSelectedPropertyId(property.id);
                   markVisited(property.id);
                 }}
                 onMapClick={() => {

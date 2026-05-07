@@ -1,19 +1,29 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
-
 import { PropertyProvider } from "@/components/PropertyContext"
+import { cn } from "@/lib/utils"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  
+  // Routes that should have a fixed, non-scrolling viewport layout (Search, Map, Messages)
+  const isFixedLayout = !["/home-value", "/profile", "/settings"].some(path => 
+    pathname === path || pathname.startsWith(path + "/") || pathname.startsWith(path + "?")
+  )
+
   return (
     <PropertyProvider>
-      <div className="dark h-[100dvh] overflow-hidden bg-background text-foreground">
+      <div className={cn(
+        "dark bg-background text-foreground transition-all duration-300",
+        isFixedLayout ? "h-[100dvh] overflow-hidden" : "min-h-screen"
+      )}>
       <SidebarProvider
         defaultOpen
         style={
@@ -24,7 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }
       >
         <AppSidebar />
-        <SidebarInset>
+        <SidebarInset className={cn(!isFixedLayout && "overflow-visible")}>
           {children}
         </SidebarInset>
       </SidebarProvider>

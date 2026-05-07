@@ -157,7 +157,9 @@ type PropertyContextType = {
   updateSavedSearch: (search: SavedSearch) => void;
   setSelectedSavedSearchId: (id: string | null) => void;
   messages: Message[];
-  sendMessage: (content: string) => void;
+  sendMessage: (content: string, propertyId?: string) => void;
+  propertyActivity: Record<string, { type: string; user: string; time: string }[]>;
+  addPropertyActivity: (propertyId: string, activity: { type: string; user: string }) => void;
   recentlyViewedIds: string[];
   profileData: { name: string; email: string; phone: string; contactMethod: string };
   updateProfileData: (data: Partial<{ name: string; email: string; phone: string; contactMethod: string }>) => void;
@@ -170,6 +172,8 @@ type PropertyContextType = {
   updateHomeValueListing: (id: string, updates: Partial<HomeValueListing>) => void;
   activeHomeValueId: string | null;
   setActiveHomeValueId: (id: string | null) => void;
+  selectedPropertyId: string | null;
+  setSelectedPropertyId: (id: string | null) => void;
   moreFilters: MoreFiltersState;
   setMoreFilters: (filters: MoreFiltersState) => void;
 };
@@ -182,6 +186,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>(initialSavedSearches);
   const [selectedSavedSearchId, setSelectedSavedSearchId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [propertyActivity, setPropertyActivity] = useState<Record<string, { type: string; user: string; time: string }[]>>({});
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([]);
   const [profileData, setProfileData] = useState({
     name: "Michael Loft",
@@ -191,6 +196,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   });
   const [homeValueListings, setHomeValueListings] = useState<HomeValueListing[]>(initialHomeValueListings);
   const [activeHomeValueId, setActiveHomeValueId] = useState<string | null>(initialHomeValueListings[0]?.id || null);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [moreFilters, setMoreFilters] = useState<MoreFiltersState>(defaultMoreFilters);
 
   const toggleInterested = useCallback((propertyId: string) => {
@@ -213,6 +219,17 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const addPropertyActivity = useCallback((propertyId: string, activity: { type: string; user: string }) => {
+    setPropertyActivity((prev) => {
+      const current = prev[propertyId] || [];
+      const newActivity = {
+        ...activity,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      return { ...prev, [propertyId]: [newActivity, ...current] };
+    });
+  }, []);
+
   const markVisited = useCallback((propertyId: string) => {
     setVisitedIds((current) => {
       const next = new Set(current);
@@ -223,18 +240,24 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
       const filtered = current.filter(id => id !== propertyId);
       return [propertyId, ...filtered].slice(0, 20); // Keep last 20
     });
-  }, []);
+    addPropertyActivity(propertyId, { type: "Viewed", user: "You" });
+  }, [addPropertyActivity]);
 
-  const sendMessage = useCallback((content: string) => {
+  const sendMessage = useCallback((content: string, propertyId?: string) => {
+    const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const newMessage: Message = {
       id: Date.now().toString(),
       content,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      time,
       isIncoming: false,
       status: "Delivered",
     };
     setMessages((prev) => [...prev, newMessage]);
-  }, []);
+    
+    if (propertyId) {
+      addPropertyActivity(propertyId, { type: "Message sent", user: "You" });
+    }
+  }, [addPropertyActivity]);
 
   const updateProfileData = useCallback((data: Partial<typeof profileData>) => {
     setProfileData((prev) => ({ ...prev, ...data }));
@@ -293,6 +316,8 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
         setSelectedSavedSearchId,
         messages,
         sendMessage,
+        propertyActivity,
+        addPropertyActivity,
         recentlyViewedIds,
         profileData,
         updateProfileData,
@@ -305,6 +330,8 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
         updateHomeValueListing,
         activeHomeValueId,
         setActiveHomeValueId,
+        selectedPropertyId,
+        setSelectedPropertyId,
         moreFilters,
         setMoreFilters,
       }}
