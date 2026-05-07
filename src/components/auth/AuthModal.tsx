@@ -27,12 +27,8 @@ function SignUpForm({
   onSuccess: (user: AuthUser) => void;
   onSwitchToSignIn: () => void;
 }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -40,13 +36,9 @@ function SignUpForm({
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!firstName.trim()) e.firstName = "First name is required.";
-    if (!lastName.trim()) e.lastName = "Last name is required.";
+    if (!fullName.trim()) e.fullName = "Full name is required.";
     if (!email.trim()) e.email = "Email is required.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Enter a valid email.";
-    if (!phone.trim()) e.phone = "Phone number is required.";
-    if (!password) e.password = "Password is required.";
-    else if (password.length < 6) e.password = "Password must be at least 6 characters.";
     return e;
   };
 
@@ -60,10 +52,9 @@ function SignUpForm({
     setLoading(false);
     onSuccess({
       id: `user-${Date.now()}`,
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
+      firstName: fullName.trim().split(/\s+/)[0] || fullName.trim(),
+      lastName: fullName.trim().split(/\s+/).slice(1).join(" "),
       email: email.trim(),
-      phone: phone.trim(),
     });
   };
 
@@ -75,7 +66,7 @@ function SignUpForm({
     type = "text",
     placeholder = ""
   ) => (
-    <div className="space-y-1.5">
+    <div className="space-y-1">
       <Label htmlFor={id} className="text-xs font-semibold text-foreground/80 uppercase tracking-wide">
         {label}
       </Label>
@@ -85,7 +76,7 @@ function SignUpForm({
         placeholder={placeholder}
         value={value}
         onChange={(e) => { onChange(e.target.value); setErrors((p) => ({ ...p, [id]: "" })); }}
-        className={cn("h-10 text-sm bg-background", errors[id] && "border-destructive focus-visible:ring-destructive")}
+        className={cn("h-9 bg-background text-sm", errors[id] && "border-destructive focus-visible:ring-destructive")}
         autoComplete={type === "password" ? "new-password" : undefined}
       />
       {errors[id] && <p className="text-[11px] text-destructive">{errors[id]}</p>}
@@ -93,45 +84,11 @@ function SignUpForm({
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mt-2" noValidate>
-      <div className="grid grid-cols-2 gap-3">
-        {field("firstName", "First Name", firstName, setFirstName, "text", "John")}
-        {field("lastName", "Last Name", lastName, setLastName, "text", "Smith")}
-      </div>
+    <form onSubmit={handleSubmit} className="mt-1 space-y-3" noValidate>
+      {field("fullName", "Full Name", fullName, setFullName, "text", "John Smith")}
       {field("email", "Email", email, setEmail, "email", "you@example.com")}
-      {field("phone", "Phone Number", phone, setPhone, "tel", "(555) 000-0000")}
 
-      <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-xs font-semibold text-foreground/80 uppercase tracking-wide">
-          Password
-        </Label>
-        <div className="relative">
-          <Input
-            id="password"
-            type={showPass ? "text" : "password"}
-            placeholder="Min. 6 characters"
-            value={password}
-            onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: "" })); }}
-            className={cn("h-10 pr-10 text-sm bg-background", errors.password && "border-destructive focus-visible:ring-destructive")}
-            autoComplete="new-password"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPass((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            tabIndex={-1}
-          >
-            {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-          </button>
-        </div>
-        {errors.password && <p className="text-[11px] text-destructive">{errors.password}</p>}
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full h-11 font-semibold text-sm"
-        disabled={loading}
-      >
+      <Button type="submit" className="h-10 w-full text-sm font-semibold" disabled={loading}>
         {loading ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
         Sign Up
       </Button>
@@ -147,7 +104,7 @@ function SignUpForm({
         </button>
       </p>
 
-      <p className="text-center text-[10px] text-muted-foreground/60 leading-relaxed">
+      <p className="text-center text-[10px] leading-relaxed text-muted-foreground/60">
         By creating an account you agree to our Terms of Service and Privacy Policy.
       </p>
     </form>
@@ -284,14 +241,14 @@ export function AuthModal() {
       open={isOpen}
       onOpenChange={(open) => { if (!open) setAuthMode(null); }}
     >
-      <DialogContent className="sm:max-w-[440px] p-0 overflow-hidden border border-border bg-card">
+      <DialogContent className="max-h-[88vh] overflow-hidden border border-border bg-card p-0 sm:max-w-[420px]">
         {/* Header */}
-        <div className="px-7 pt-7 pb-4 space-y-1">
+        <div className="space-y-1 px-6 pb-3 pt-5">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold tracking-tight">
               {authMode === "signup" ? "Sign Up" : "Sign In"}
             </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
+            <DialogDescription className="text-sm leading-relaxed text-muted-foreground">
               {authMode === "signup"
                 ? (pendingAuthIntent
                     ? authIntentCopy[pendingAuthIntent]
@@ -303,7 +260,7 @@ export function AuthModal() {
 
         <Separator />
 
-        <div className="px-7 pb-7 pt-4">
+        <div className="px-6 pb-5 pt-3">
           {authMode === "signup" ? (
             <SignUpForm
               intent={pendingAuthIntent}
