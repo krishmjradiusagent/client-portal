@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronRight, Check, CheckCheck, Plus } from "lucide-react";
+import { Search, ChevronRight, Check, CheckCheck, Plus, Users } from "lucide-react";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { usePropertyContext } from "../PropertyContext";
@@ -73,25 +73,18 @@ const MOCK_CONVERSATIONS = [
   }
 ];
 
-function GroupAvatar({ participants }: { participants: string[] }) {
-  const displayParticipants = participants.slice(0, 3);
+function PropertyAvatar({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative h-10 w-10 shrink-0">
-      {displayParticipants.map((name, i) => (
-        <Avatar 
-          key={name} 
-          className={cn(
-            "absolute h-7 w-7 border-2 border-background shadow-sm",
-            i === 0 && "top-0 left-0 z-30",
-            i === 1 && "bottom-0 right-0 z-20",
-            i === 2 && "top-0 right-0 z-10 translate-x-1 -translate-y-1"
-          )}
-        >
-          <AvatarFallback className="text-[8px] bg-primary/10 text-primary font-bold">
-            {name.split(" ").map(n => n[0]).join("")}
-          </AvatarFallback>
-        </Avatar>
-      ))}
+    <div className="h-10 w-10 shrink-0 rounded-lg overflow-hidden border border-border/50 shadow-sm">
+      <img src={src} alt={alt} className="h-full w-full object-cover" />
+    </div>
+  );
+}
+
+function GroupIconAvatar() {
+  return (
+    <div className="h-10 w-10 shrink-0 rounded-full bg-muted/60 border border-border/40 flex items-center justify-center">
+      <Users className="h-5 w-5 text-muted-foreground" />
     </div>
   );
 }
@@ -155,8 +148,10 @@ export function MessagesPanel() {
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
                 )}
                 
-                {conv.type === "group" ? (
-                  <GroupAvatar participants={conv.participants} />
+                {conv.propertyThumbnail ? (
+                  <PropertyAvatar src={conv.propertyThumbnail} alt={conv.title} />
+                ) : conv.type === "group" ? (
+                  <GroupIconAvatar />
                 ) : (
                   <Avatar className="h-10 w-10 border border-border/50 shrink-0 shadow-sm">
                     {conv.avatar && <AvatarImage src={conv.avatar} alt={conv.title} />}
@@ -191,11 +186,7 @@ export function MessagesPanel() {
                   </span>
                 </div>
 
-                {conv.propertyThumbnail && (
-                  <div className="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-border/50 ml-1 mt-0.5">
-                    <img src={conv.propertyThumbnail} alt="Property" className="w-full h-full object-cover" />
-                  </div>
-                )}
+
 
                 {conv.unread && (
                   <div className="absolute right-4 bottom-4 w-2 h-2 bg-primary rounded-full shadow-sm shadow-primary/20" />
@@ -211,8 +202,10 @@ export function MessagesPanel() {
         {/* Chat Header */}
         <div className="h-[65px] border-b border-border flex items-center justify-between px-6 shrink-0 bg-background/95 backdrop-blur-sm z-40 sticky top-0 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4">
-            {activeConversation.type === "group" ? (
-              <GroupAvatar participants={activeConversation.participants} />
+            {activeConversation.propertyThumbnail ? (
+              <PropertyAvatar src={activeConversation.propertyThumbnail} alt={activeConversation.title} />
+            ) : activeConversation.type === "group" ? (
+              <GroupIconAvatar />
             ) : (
               <Avatar className="h-10 w-10 border border-border/50 shadow-sm">
                 {activeConversation.avatar && <AvatarImage src={activeConversation.avatar} alt={activeConversation.title} />}
