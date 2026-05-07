@@ -88,7 +88,7 @@ export function MapPanel({
             }}
           >
             <div className="flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-              <div className="rounded-full border border-white bg-slate-950 px-3 py-1 text-xs font-semibold text-white shadow-lg transition group-hover:scale-105">
+              <div className="rounded-full border border-white bg-blue-600 px-3 py-1 text-xs font-semibold text-white shadow-lg transition group-hover:scale-105">
                 ${Math.round(property.price / 1000)}K
               </div>
               <div className="mt-1 h-2 w-2 rounded-full bg-white shadow-sm" />

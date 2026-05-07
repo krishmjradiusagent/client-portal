@@ -36,11 +36,6 @@ const routeTitles: Record<RouteKey, string> = {
 export function ClientPortal() {
   const pathname = usePathname();
 
-  const activeRoute = useMemo<RouteKey>(() => {
-    const route = pathname.replace(/^\//, "") as RouteKey;
-    return routeTitles[route] ? route : "search";
-  }, [pathname]);
-
   const [selectedLocation, setSelectedLocation] = useState("All areas");
   const smartSuggestions = [
     { label: "Nearby walk-to-coffee spots", icon: "Coffee" },
@@ -69,6 +64,12 @@ export function ClientPortal() {
     selectedPropertyId,
     setSelectedPropertyId
   } = usePropertyContext();
+
+  const activeRoute = useMemo<RouteKey | "listing">(() => {
+    if (selectedPropertyId) return "listing";
+    const route = pathname.replace(/^\//, "") as RouteKey;
+    return routeTitles[route] ? route : "search";
+  }, [pathname, selectedPropertyId]);
 
   const { authUser, setAuthMode } = useAuth();
   const isAuthenticated = Boolean(authUser);

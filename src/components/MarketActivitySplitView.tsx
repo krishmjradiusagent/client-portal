@@ -282,15 +282,15 @@ export function MarketActivitySplitView() {
                 className={cn(
                   "px-2 py-1 rounded-lg border shadow-lg text-[10px] font-black transition-all duration-200",
                   hoveredComp === p.address || selectedCompIds.includes(p.address)
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-white text-slate-900 border-slate-200"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-blue-50 text-blue-700 border-blue-200"
                 )}
               >
                 {formatPriceToK(p.price)}
               </motion.div>
               <div className={cn(
                 "w-1.5 h-1.5 rounded-full mx-auto mt-0.5 border border-white shadow-sm transition-colors",
-                hoveredComp === p.address || selectedCompIds.includes(p.address) ? "bg-indigo-500" : "bg-slate-900"
+                hoveredComp === p.address || selectedCompIds.includes(p.address) ? "bg-blue-500" : "bg-blue-600"
               )} />
             </div>
           ))}
@@ -309,15 +309,15 @@ export function MarketActivitySplitView() {
                 className={cn(
                   "px-2 py-1 rounded-lg border shadow-lg text-[10px] font-black transition-all duration-200",
                   hoveredComp === p.address || selectedCompIds.includes(p.address)
-                    ? "bg-purple-600 text-white border-purple-600"
-                    : "bg-purple-50 text-purple-700 border-purple-200"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-blue-50 text-blue-700 border-blue-200"
                 )}
               >
                 {formatPriceToK(p.price)}
               </motion.div>
               <div className={cn(
                 "w-1.5 h-1.5 rounded-full mx-auto mt-0.5 border border-white shadow-sm transition-colors",
-                hoveredComp === p.address || selectedCompIds.includes(p.address) ? "bg-purple-400" : "bg-purple-600"
+                hoveredComp === p.address || selectedCompIds.includes(p.address) ? "bg-blue-500" : "bg-blue-600"
               )} />
             </div>
           ))}
