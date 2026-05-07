@@ -68,7 +68,7 @@ export function ResultsPanel({
   const visibleCount = properties.length;
 
   return (
-    <div className="flex-1 border-r border-slate-200 bg-slate-50 flex flex-col h-full">
+    <div className="flex-1 border-r border-slate-200 bg-slate-50 flex flex-col min-h-full">
       <div className="flex-1">
         {/* Page Title Row (Left Column) */}
 

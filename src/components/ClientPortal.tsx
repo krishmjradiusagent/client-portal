@@ -221,8 +221,8 @@ export function ClientPortal() {
           />
           </div>
 
-          <div className="grid grid-cols-[45%_55%] min-h-0 flex-1 overflow-hidden">
-            <div className="h-full min-h-0 overflow-y-auto overscroll-contain border-r border-slate-100 flex flex-col">
+          <section className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[minmax(420px,520px)_minmax(560px,1fr)]">
+            <aside className="h-full min-h-0 overflow-y-auto overscroll-contain bg-background">
               <ResultsPanel
                 route={activeRoute}
                 properties={routeProperties}
@@ -261,8 +261,8 @@ export function ClientPortal() {
                       : routeTitles[activeRoute]
                 }
               />
-            </div>
-            <div className="relative h-full min-h-0 overflow-hidden">
+            </aside>
+            <div className="relative h-full min-h-0 overflow-hidden border-l border-border">
               <MapPanel
                 mode={
                   activeRoute === "matches"
@@ -295,7 +295,7 @@ export function ClientPortal() {
                 moreFilters={moreFilters}
               />
             </div>
-          </div>
+          </section>
         </div>
       )}
       <AdvancedFiltersSheet
