@@ -98,7 +98,7 @@ export function PropertyDetailPage() {
   const isNotInterested = property.status === "notInterested";
 
   return (
-    <div className="flex h-full flex-col bg-background overflow-hidden">
+    <div className="flex flex-1 min-h-0 flex-col bg-background overflow-hidden">
       {/* Top Nav */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b px-6">
         <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export function PropertyDetailPage() {
       </header>
 
       {/* Main Content Area - Scrollable */}
-      <main className="flex-1 overflow-y-auto overscroll-contain">
+      <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div className="mx-auto max-w-[1400px] px-6 py-8">
           {/* Gallery - Airbnb Style */}
           <section className="mb-8 overflow-hidden rounded-xl border">
