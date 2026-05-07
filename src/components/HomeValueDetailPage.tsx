@@ -18,6 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  LayoutGrid,
+  Map as MapIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -63,8 +65,8 @@ function HomeValueCompCard({
     : formatPriceToK(price);
 
   return (
-    <Card className="border border-slate-200/80 rounded-[28px] overflow-hidden group hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 ease-out bg-white p-2">
-      <div className="relative h-56 bg-slate-100 rounded-[20px] overflow-hidden cursor-pointer">
+    <Card className="border border-slate-200/80 rounded-[24px] overflow-hidden group hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 ease-out bg-white p-1.5">
+      <div className="relative h-44 bg-slate-100 rounded-[18px] overflow-hidden cursor-pointer">
         <img
           src={image}
           alt={address}
@@ -118,24 +120,23 @@ function HomeValueCompCard({
         </div>
       </div>
 
-      <CardContent className="p-4 pt-5 pb-3 space-y-4">
-        <h3 className="text-[19px] font-bold text-slate-900 truncate tracking-tight">{address}</h3>
+      <CardContent className="p-3 pt-4 pb-2 space-y-3">
+        <h3 className="text-[17px] font-bold text-slate-900 truncate tracking-tight">{address}</h3>
         
-        <div className="flex items-center gap-4 text-[14px] text-slate-500 font-medium">
+        <div className="flex items-center gap-3 text-[13px] text-slate-500 font-medium">
           <div className="flex items-center gap-1.5">
-            <Bed className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
+            <Bed className="size-3.5 text-slate-400/80" strokeWidth={2.5} />
             <span><span className="font-bold text-slate-800">{beds}</span> bd</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Bath className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
+            <Bath className="size-3.5 text-slate-400/80" strokeWidth={2.5} />
             <span><span className="font-bold text-slate-800">{baths}</span> ba</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Square className="w-4 h-4 text-slate-300" strokeWidth={2.5} />
-            <span><span className="font-bold text-slate-800">{sqft.toLocaleString()}</span> Sq. ft</span>
+            <Square className="size-3.5 text-slate-400/80" strokeWidth={2.5} />
+            <span><span className="font-bold text-slate-800">{sqft.toLocaleString()}</span> sqft</span>
           </div>
         </div>
-
       </CardContent>
     </Card>
   );
@@ -153,6 +154,8 @@ const recentlyListedData = [
     meta: "0.4 mi away",
     image:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
+    markerTop: "42%",
+    markerLeft: "45%",
   },
   {
     address: "4208 Hyde Park Rd",
@@ -164,6 +167,8 @@ const recentlyListedData = [
     meta: "1.1 mi away",
     image:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=600&auto=format&fit=crop",
+    markerTop: "35%",
+    markerLeft: "58%",
   },
   {
     address: "4683 Glenalbyn Drive",
@@ -175,6 +180,8 @@ const recentlyListedData = [
     meta: "2.4 mi away",
     image:
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=600&auto=format&fit=crop",
+    markerTop: "48%",
+    markerLeft: "32%",
   },
 ];
 
@@ -189,6 +196,8 @@ const recentlySoldData = [
     meta: "Sold 2 weeks ago",
     image:
       "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=600&auto=format&fit=crop",
+    markerTop: "55%",
+    markerLeft: "52%",
   },
   {
     address: "1205 E 7th St",
@@ -200,6 +209,8 @@ const recentlySoldData = [
     meta: "Sold 2 weeks ago",
     image:
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=600&auto=format&fit=crop",
+    markerTop: "62%",
+    markerLeft: "48%",
   },
   {
     address: "702 Wlake Dr",
@@ -211,6 +222,8 @@ const recentlySoldData = [
     meta: "Sold 1 month ago",
     image:
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=600&auto=format&fit=crop",
+    markerTop: "28%",
+    markerLeft: "65%",
   },
 ];
 
@@ -228,6 +241,7 @@ export function HomeValueDetailPage() {
     comps: false,
     cma: false,
   });
+  const [marketView, setMarketView] = useState<"grid" | "map">("grid");
 
   if (!listing) return null;
 
@@ -401,55 +415,158 @@ export function HomeValueDetailPage() {
             </Card>
             </motion.div>
 
-            {/* ── 4. Recently Listed ── */}
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.28, ease: [0.23, 1, 0.32, 1] }} className="space-y-3">
-              <div className="flex items-center justify-between">
+            {/* ── 4. Market Activity Section with Grid/Map Toggle ── */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Recently Listed
+                  <h3 className="text-[19px] font-bold text-slate-900 tracking-tight">
+                    Market Activity
                   </h3>
-                  <p className="text-xs text-slate-500">
-                    Market stats based upon listings similar to your home.
+                  <p className="text-xs text-slate-500 font-medium">
+                    Nearby listings and sales similar to your property.
                   </p>
                 </div>
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-xs font-semibold text-indigo-600 hover:no-underline"
-                >
-                  View all
-                </Button>
+                
+                {/* View Toggle */}
+                <div className="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/50 backdrop-blur-sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setMarketView("grid")}
+                    className={cn(
+                      "h-8 px-4 rounded-lg text-xs font-bold gap-2 transition-all duration-200",
+                      marketView === "grid"
+                        ? "bg-white shadow-sm text-slate-900"
+                        : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
+                    )}
+                  >
+                    <LayoutGrid className="size-3.5" />
+                    Grid
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setMarketView("map")}
+                    className={cn(
+                      "h-8 px-4 rounded-lg text-xs font-bold gap-2 transition-all duration-200",
+                      marketView === "map"
+                        ? "bg-white shadow-sm text-slate-900"
+                        : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
+                    )}
+                  >
+                    <MapIcon className="size-3.5" />
+                    Map
+                  </Button>
+                </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {recentlyListedData.map((comp, i) => (
-                  <HomeValueCompCard key={i} {...comp} />
-                ))}
-              </div>
-            </motion.div>
 
-            {/* ── 5. Recently Sold ── */}
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.34, ease: [0.23, 1, 0.32, 1] }} className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Recently Sold
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Market stats based upon listings similar to your home.
-                  </p>
+              {marketView === "grid" ? (
+                <div className="space-y-8">
+                  {/* Recently Listed Grid */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                      <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        Recently Listed
+                      </h4>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 text-xs font-semibold text-indigo-600 hover:no-underline"
+                      >
+                        View all
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {recentlyListedData.map((comp, i) => (
+                        <HomeValueCompCard key={i} {...comp} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recently Sold Grid */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                      <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                        Recently Sold
+                      </h4>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 text-xs font-semibold text-indigo-600 hover:no-underline"
+                      >
+                        Analyze
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {recentlySoldData.map((comp, i) => (
+                        <HomeValueCompCard key={i} {...comp} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <Button
-                  variant="link"
-                  className="h-auto p-0 text-xs font-semibold text-indigo-600 hover:no-underline"
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                  className="relative rounded-3xl border border-slate-200 overflow-hidden h-[600px] bg-slate-50 shadow-inner group"
                 >
-                  Analyze
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {recentlySoldData.map((comp, i) => (
-                  <HomeValueCompCard key={i} {...comp} />
-                ))}
-              </div>
-            </motion.div>
+                  <div
+                    className="absolute inset-0 bg-cover bg-center grayscale-[0.2] transition-transform duration-[1.2s] ease-out group-hover:scale-[1.02]"
+                    style={{ backgroundImage: 'url("/map-screenshot.png")' }}
+                  />
+                  
+                  {/* Map Overlay Elements */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                  
+                  {/* Legend/Controls */}
+                  <div className="absolute top-4 left-4 z-10 flex gap-2">
+                    <Badge className="bg-white/90 backdrop-blur-md text-slate-900 border-slate-200 shadow-sm font-bold px-3 py-1.5 rounded-xl">
+                      <Sparkles className="size-3 mr-1.5 text-amber-500" />
+                      Smart Markers
+                    </Badge>
+                  </div>
+
+                  {/* Listed Markers */}
+                  {[...recentlyListedData, ...recentlySoldData].map((property, idx) => (
+                    <button
+                      key={idx}
+                      className="absolute group/marker transition-all duration-300 hover:z-20"
+                      style={{ top: property.markerTop, left: property.markerLeft }}
+                    >
+                      <div className="flex flex-col items-center -translate-x-1/2 -translate-y-1/2">
+                        <div className={cn(
+                          "px-2.5 py-1 rounded-full border border-white text-[11px] font-bold text-white shadow-xl transition-all duration-200 group-hover/marker:scale-110",
+                          property.status === "Sold" ? "bg-purple-600" : "bg-slate-900"
+                        )}>
+                          {property.price.includes("Sold") ? property.price.split("Sold ")[1] : property.price}
+                        </div>
+                        <div className="w-1.5 h-1.5 bg-white rounded-full mt-1 shadow-sm border border-slate-300" />
+                        
+                        {/* Hover Preview Card */}
+                        <div className="absolute bottom-full mb-3 opacity-0 pointer-events-none group-hover/marker:opacity-100 group-hover/marker:pointer-events-auto transition-all duration-300 translate-y-2 group-hover/marker:translate-y-0 w-48">
+                          <Card className="p-1 rounded-2xl border-none shadow-2xl bg-white/95 backdrop-blur-md">
+                            <div className="h-24 rounded-xl overflow-hidden mb-2">
+                              <img src={property.image} className="w-full h-full object-cover" alt="" />
+                            </div>
+                            <div className="p-2 space-y-1 text-left">
+                              <p className="text-[13px] font-bold text-slate-900 truncate">{property.address}</p>
+                              <p className="text-[11px] font-semibold text-slate-500">{property.price}</p>
+                            </div>
+                          </Card>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+
+                  {/* Map Bottom Label */}
+                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end pointer-events-none">
+                    <Badge className="bg-slate-900/80 backdrop-blur-md text-white border-none shadow-lg px-4 py-2 rounded-2xl text-[11px] font-medium flex items-center gap-2">
+                      <div className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                      Showing comparable properties near you
+                    </Badge>
+                  </div>
+                </motion.div>
+              )}
+            </div>
           </div>
 
           {/* RIGHT COLUMN */}
