@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { SearchHeader } from "./SearchHeader";
 import { ResultsPanel } from "./ResultsPanel";
@@ -18,6 +18,7 @@ import { MessagesPanel } from "./client-portal/MessagesPanel";
 import { WillowFloatingAssistant, type WillowContext } from "./WillowFloatingAssistant";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
 import { usePropertyContext, type MoreFiltersState, defaultMoreFilters } from "./PropertyContext";
+import { useAuth } from "@/lib/auth";
 
 const routeTitles: Record<RouteKey, string> = {
   search: "Search",
@@ -69,6 +70,16 @@ export function ClientPortal() {
     selectedPropertyId,
     setSelectedPropertyId
   } = usePropertyContext();
+
+  const { authUser, setAuthMode } = useAuth();
+  const isAuthenticated = Boolean(authUser);
+
+  // If unauthenticated user lands on /messages route, open signup modal
+  useEffect(() => {
+    if (activeRoute === "messages" && !isAuthenticated) {
+      setAuthMode("signup");
+    }
+  }, [activeRoute, isAuthenticated, setAuthMode]);
 
   const [activePropertyModal, setActivePropertyModal] = useState<Property | null>(null);
   const [filtersModalOpen, setFiltersModalOpen] = useState(false);
@@ -188,9 +199,11 @@ export function ClientPortal() {
       ) : activeRoute === "home-value" ? (
         <HomeValuePage />
       ) : activeRoute === "messages" ? (
-        <div className="flex flex-col flex-1 h-[calc(100vh-18px)] overflow-hidden mb-[18px]">
-          <MessagesPanel />
-        </div>
+        !isAuthenticated ? null : (
+          <div className="flex flex-col flex-1 h-[calc(100vh-18px)] overflow-hidden mb-[18px]">
+            <MessagesPanel />
+          </div>
+        )
       ) : selectedPropertyId ? (
         <PropertyDetailPage />
       ) : (

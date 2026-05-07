@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     activeHomeValueId,
     setActiveHomeValueId
   } = usePropertyContext()
-  const { authUser, signOut, setAuthMode } = useAuth()
+  const { authUser, signOut, setAuthMode, requireAuth } = useAuth()
   const isCollapsed = state === "collapsed"
   const isAuthenticated = Boolean(authUser)
 
@@ -274,6 +274,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </CollapsibleContent>
                       </SidebarMenuItem>
                     </Collapsible>
+                  );
+                }
+
+                // Messages — gated when logged out
+                if (item.title === "Messages" && !isAuthenticated) {
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          className="h-9 transition-colors duration-200"
+                          onClick={() => requireAuth("message_agent")}
+                        >
+                          <item.icon className="size-4" />
+                          <span>{item.title}</span>
+                        </SidebarMenuButton>
+                      </motion.div>
+                    </SidebarMenuItem>
                   );
                 }
 
