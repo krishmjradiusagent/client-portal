@@ -13,8 +13,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { 
   ThumbsUp, ThumbsDown, Minus, Mail, Phone, MessageCircle, 
   Building2, UserRound, MapPin, Bed, Bath, Sparkles, 
-  Settings2, Activity, Search, Heart
+  Settings2, Activity, Search, Heart, BellRing, BellOff
 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Separator } from "./ui/separator";
+import { useAuth } from "@/lib/auth";
 
 export function ProfilePage() {
   const { 
@@ -23,7 +27,11 @@ export function ProfilePage() {
     properties,
     profileData,
     updateProfileData,
+    savedSearches,
+    selectedSavedSearchId,
+    setSelectedSavedSearchId
   } = usePropertyContext();
+  const { setAuthMode, authUser } = useAuth();
 
   const neutralCount = properties.filter(p => p.status === "search").length;
 
@@ -57,43 +65,152 @@ export function ProfilePage() {
           <div className="min-w-0 space-y-8">
             
             {/* Context Card: Search Summary */}
-            <Card className="border-slate-200 shadow-sm overflow-hidden">
-              <div className="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center gap-3">
-                <div className="p-2 bg-primary/10 text-primary rounded-md">
-                  <Search className="h-4 w-4" />
+            {savedSearches.length === 0 ? (
+              <Card className="border-slate-200 shadow-sm overflow-hidden text-center py-10 px-6">
+                <div className="mx-auto bg-slate-100 h-12 w-12 rounded-full flex items-center justify-center mb-4 text-slate-400">
+                  <Search className="h-6 w-6" />
                 </div>
-                <div>
-                  <h2 className="font-semibold text-slate-900">Current Search Context</h2>
-                  <p className="text-xs text-slate-500">Your primary home search criteria</p>
-                </div>
-              </div>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Location</p>
-                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                      <MapPin className="h-3.5 w-3.5 text-slate-400" /> San Francisco
+                <h2 className="font-semibold text-slate-900 mb-1">No saved search yet</h2>
+                <p className="text-sm text-slate-500 mb-6">Create a search to start tracking matching homes.</p>
+                <Button onClick={() => {
+                  if (!authUser) {
+                    setAuthMode("signup");
+                  } else {
+                    // Navigate to search creation flow in real implementation
+                  }
+                }}>Create Search</Button>
+              </Card>
+            ) : (
+              <Card className="border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-slate-50 border-b border-slate-100 px-6 py-4 flex sm:items-center justify-between flex-col sm:flex-row gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 text-primary rounded-md">
+                      <Search className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h2 className="font-semibold text-slate-900">Active Search Context</h2>
+                      <p className="text-xs text-slate-500">
+                        {savedSearches.length === 1 
+                          ? "Saved search criteria" 
+                          : "Choose a saved search to view matching homes"}
+                      </p>
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Price Range</p>
-                    <div className="text-sm font-semibold text-slate-700">$1M - $2.5M</div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Beds</p>
-                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                      <Bed className="h-3.5 w-3.5 text-slate-400" /> 3+ Beds
+                  {savedSearches.length >= 6 && (
+                    <div className="sm:max-w-[240px] w-full">
+                      <div className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5">Viewing search</div>
+                      <Select 
+                        value={selectedSavedSearchId || savedSearches[0].id} 
+                        onValueChange={setSelectedSavedSearchId}
+                      >
+                        <SelectTrigger className="bg-white">
+                          <SelectValue placeholder="Select a search" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {savedSearches.map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Baths</p>
-                    <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
-                      <Bath className="h-3.5 w-3.5 text-slate-400" /> 2+ Baths
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+
+                {savedSearches.length > 1 && savedSearches.length <= 5 && (
+                  <div className="px-6 pt-5 pb-0">
+                    <div className="flex flex-wrap gap-2">
+                      {savedSearches.map(s => {
+                        const isSelected = (selectedSavedSearchId || savedSearches[0].id) === s.id;
+                        return (
+                          <TooltipProvider key={s.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => setSelectedSavedSearchId(s.id)}
+                                  className={`
+                                    flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors border max-w-[200px]
+                                    ${isSelected 
+                                      ? "border-primary bg-primary/5 text-primary font-medium" 
+                                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"}
+                                  `}
+                                >
+                                  <span className="truncate">{s.name}</span>
+                                  {s.propertyIds?.length > 0 && (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isSelected ? "bg-primary/10 text-primary" : "bg-slate-100 text-slate-500"}`}>
+                                      {s.propertyIds.length} matches
+                                    </span>
+                                  )}
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{s.name}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )
+                      })}
+                    </div>
+                    <Separator className="mt-5" />
+                  </div>
+                )}
+
+                <CardContent className={`p-6 ${savedSearches.length > 1 && savedSearches.length <= 5 ? "pt-5" : ""}`}>
+                  {(() => {
+                    const activeSearch = savedSearches.find(s => s.id === (selectedSavedSearchId || savedSearches[0].id)) || savedSearches[0];
+                    const criteriaStr = activeSearch.criteria.toLowerCase();
+                    const bedsMatch = criteriaStr.match(/(\d+\+?)\s*beds?/);
+                    const beds = bedsMatch ? bedsMatch[1] + " Beds" : "Any";
+                    
+                    const priceRange = activeSearch.priceMin && activeSearch.priceMax 
+                      ? `${activeSearch.priceMin} - ${activeSearch.priceMax}`
+                      : activeSearch.priceMax ? `Up to ${activeSearch.priceMax}`
+                      : activeSearch.priceMin ? `${activeSearch.priceMin}+`
+                      : "Any";
+
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Location</p>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                            <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" /> 
+                            <span className="truncate">{activeSearch.location || "Any"}</span>
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Price Range</p>
+                          <div className="text-sm font-semibold text-slate-700">{priceRange}</div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Beds</p>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                            <Bed className="h-3.5 w-3.5 text-slate-400 shrink-0" /> {beds}
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Baths</p>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                            <Bath className="h-3.5 w-3.5 text-slate-400 shrink-0" /> Any
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Property Type</p>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                            <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" /> Any
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Alerts</p>
+                          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+                            {activeSearch.emailAlerts === false ? <BellOff className="h-3.5 w-3.5 text-slate-400 shrink-0" /> : <BellRing className="h-3.5 w-3.5 text-slate-400 shrink-0" />} 
+                            {activeSearch.emailAlerts === false ? "Off" : "On"}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Contact Details */}
             <Card className="border-slate-200 shadow-sm">

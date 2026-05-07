@@ -63,7 +63,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence, type Transition } from "framer-motion"
 import { AuroraBars } from "@/components/ui/aurora-bars"
-import { Card } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { usePropertyContext } from "./PropertyContext"
 
@@ -415,32 +415,42 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {/* Signed-out auth card — visible only when logged out and sidebar expanded */}
       {!isAuthenticated && !isCollapsed && (
         <div className="px-3 pb-3">
-          <div className="rounded-xl border border-sidebar-border/50 bg-sidebar-accent/30 p-4 space-y-3">
-            <p className="text-[12px] text-sidebar-foreground/70 leading-relaxed">
-              Sign up to start searching with your agent.
-            </p>
-            <Button
-              size="sm"
-              className="w-full h-8 text-xs font-semibold"
-              onClick={() => setAuthMode("signup")}
-            >
-              Sign Up
-            </Button>
-            <Separator className="bg-sidebar-border/30" />
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setAuthMode("signin")}
-                className="text-[11px] text-sidebar-foreground/50 hover:text-sidebar-foreground underline-offset-4 hover:underline transition-colors"
+          <Card className="border-border bg-card shadow-none">
+            <CardHeader className="space-y-1.5 p-4 pb-2">
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-semibold text-card-foreground">
+                  Save homes
+                </CardTitle>
+              </div>
+              <CardDescription className="text-sm leading-5 text-muted-foreground">
+                Create an account to save searches, favorite homes, and message your agent.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-2 p-4 pt-2">
+              <Button
+                size="sm"
+                className="h-9 w-full"
+                onClick={() => setAuthMode("signup")}
               >
-                Have an account? Sign In
-              </button>
-            </div>
-            <Separator className="bg-sidebar-border/20" />
-            <div className="space-y-0.5">
-              <p className="text-[10px] text-sidebar-foreground/35 tracking-wide">ila@radiusagent.com</p>
-              <p className="text-[10px] text-sidebar-foreground/35 tracking-wide">License #01383148</p>
-            </div>
+                Sign up
+              </Button>
+
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-9 w-full text-muted-foreground hover:bg-muted hover:text-card-foreground"
+                onClick={() => setAuthMode("signin")}
+              >
+                Sign in
+              </Button>
+            </CardContent>
+          </Card>
+          <div className="mt-4 px-1 space-y-0.5 text-left text-[11px] text-sidebar-foreground/50 leading-tight">
+            <p>Ila Corcoran</p>
+            <p>ila@radiusagent.com</p>
+            <p>License #01383148</p>
           </div>
         </div>
       )}
