@@ -242,6 +242,7 @@ export function HomeValueDetailPage() {
     cma: false,
   });
   const [marketView, setMarketView] = useState<"grid" | "map">("grid");
+  const [mapFilter, setMapFilter] = useState<"all" | "listed" | "sold">("all");
 
   if (!listing) return null;
 
@@ -517,26 +518,77 @@ export function HomeValueDetailPage() {
                   {/* Map Overlay Elements */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
                   
-                  {/* Legend/Controls */}
-                  <div className="absolute top-4 left-4 z-10 flex gap-2">
-                    <Badge className="bg-white/90 backdrop-blur-md text-slate-900 border-slate-200 shadow-sm font-bold px-3 py-1.5 rounded-xl">
-                      <Sparkles className="size-3 mr-1.5 text-amber-500" />
-                      Smart Markers
-                    </Badge>
+                  {/* ── Floating Filter Chips ── */}
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+                    {([
+                      { key: "all" as const, label: "All" },
+                      { key: "listed" as const, label: "Recently Listed" },
+                      { key: "sold" as const, label: "Recently Sold" },
+                    ]).map((f) => (
+                      <button
+                        key={f.key}
+                        onClick={() => setMapFilter(f.key)}
+                        className={cn(
+                          "px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200 backdrop-blur-md shadow-sm cursor-pointer",
+                          mapFilter === f.key
+                            ? "bg-slate-900 text-white border-slate-900 shadow-md"
+                            : "bg-white/90 text-slate-700 border-slate-200 hover:bg-white hover:border-slate-300"
+                        )}
+                      >
+                        {f.key === "listed" && <span className="inline-block size-2 rounded-full bg-slate-900 mr-1.5 align-middle" />}
+                        {f.key === "sold" && <span className="inline-block size-2 rounded-full bg-purple-600 mr-1.5 align-middle" />}
+                        {f.label}
+                      </button>
+                    ))}
                   </div>
 
-                  {/* Listed Markers */}
-                  {[...recentlyListedData, ...recentlySoldData].map((property, idx) => (
+                  {/* ── Centered Home Icon (Your Property) ── */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+                    <div className="w-10 h-10 rounded-full bg-indigo-600 border-[3px] border-white shadow-xl flex items-center justify-center">
+                      <Home className="size-5 text-white" />
+                    </div>
+                    <div className="mt-1 px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm shadow text-[10px] font-bold text-slate-900 whitespace-nowrap border border-slate-200">
+                      Your Home
+                    </div>
+                  </div>
+
+                  {/* ── Property Markers (filtered) ── */}
+                  {(mapFilter === "all" || mapFilter === "listed") && recentlyListedData.map((property, idx) => (
                     <button
-                      key={idx}
+                      key={`listed-${idx}`}
                       className="absolute group/marker transition-all duration-300 hover:z-20"
                       style={{ top: property.markerTop, left: property.markerLeft }}
                     >
                       <div className="flex flex-col items-center -translate-x-1/2 -translate-y-1/2">
-                        <div className={cn(
-                          "px-2.5 py-1 rounded-full border border-white text-[11px] font-bold text-white shadow-xl transition-all duration-200 group-hover/marker:scale-110",
-                          property.status === "Sold" ? "bg-purple-600" : "bg-slate-900"
-                        )}>
+                        <div className="px-2.5 py-1 rounded-full border border-white text-[11px] font-bold text-white shadow-xl transition-all duration-200 group-hover/marker:scale-110 bg-slate-900">
+                          {property.price}
+                        </div>
+                        <div className="w-1.5 h-1.5 bg-white rounded-full mt-1 shadow-sm border border-slate-300" />
+                        
+                        {/* Hover Preview Card */}
+                        <div className="absolute bottom-full mb-3 opacity-0 pointer-events-none group-hover/marker:opacity-100 group-hover/marker:pointer-events-auto transition-all duration-300 translate-y-2 group-hover/marker:translate-y-0 w-48">
+                          <Card className="p-1 rounded-2xl border-none shadow-2xl bg-white/95 backdrop-blur-md">
+                            <div className="h-24 rounded-xl overflow-hidden mb-2">
+                              <img src={property.image} className="w-full h-full object-cover" alt="" />
+                            </div>
+                            <div className="p-2 space-y-1 text-left">
+                              <p className="text-[13px] font-bold text-slate-900 truncate">{property.address}</p>
+                              <p className="text-[11px] font-semibold text-slate-500">{property.price}</p>
+                            </div>
+                          </Card>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+
+                  {(mapFilter === "all" || mapFilter === "sold") && recentlySoldData.map((property, idx) => (
+                    <button
+                      key={`sold-${idx}`}
+                      className="absolute group/marker transition-all duration-300 hover:z-20"
+                      style={{ top: property.markerTop, left: property.markerLeft }}
+                    >
+                      <div className="flex flex-col items-center -translate-x-1/2 -translate-y-1/2">
+                        <div className="px-2.5 py-1 rounded-full border border-white text-[11px] font-bold text-white shadow-xl transition-all duration-200 group-hover/marker:scale-110 bg-purple-600">
                           {property.price.includes("Sold") ? property.price.split("Sold ")[1] : property.price}
                         </div>
                         <div className="w-1.5 h-1.5 bg-white rounded-full mt-1 shadow-sm border border-slate-300" />
