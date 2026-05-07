@@ -38,6 +38,112 @@ const INITIAL_MESSAGES: Message[] = [
   },
 ];
 
+export type MoreFiltersState = {
+  maxHoa: string
+  listingType: {
+    ownerPosted: boolean
+    agentListed: boolean
+    newConstruction: boolean
+    foreclosures: boolean
+    auctions: boolean
+  }
+  listingStatus: {
+    comingSoon: boolean
+    acceptingBackupOffers: boolean
+    pendingUnderContract: boolean
+  }
+  tours: {
+    openHouse: boolean
+    threeDTour: boolean
+    showcase: boolean
+  }
+  parkingSpots: string
+  garage: boolean
+  squareFeetMin: string
+  squareFeetMax: string
+  lotSizeMin: string
+  lotSizeMax: string
+  yearBuiltMin: string
+  yearBuiltMax: string
+  basement: boolean
+  singleStoryOnly: boolean
+  communities55: "include" | "dont_show" | "only_show"
+  amenities: {
+    ac: boolean
+    pool: boolean
+    waterfront: boolean
+  }
+  view: {
+    city: boolean
+    mountain: boolean
+    park: boolean
+    water: boolean
+  }
+  commuteAddress: string
+  commuteFiltersOpen: boolean
+  commuteTime: string
+  commuteMode: "drive" | "walk" | "transit" | "bike"
+  daysOnMarket: string
+  keywords: string
+  propertyType: string
+  beds: string
+  baths: string
+  matchScore: string
+}
+
+export const defaultMoreFilters: MoreFiltersState = {
+  maxHoa: "Any",
+  listingType: {
+    ownerPosted: true,
+    agentListed: true,
+    newConstruction: true,
+    foreclosures: true,
+    auctions: true,
+  },
+  listingStatus: {
+    comingSoon: true,
+    acceptingBackupOffers: false,
+    pendingUnderContract: false,
+  },
+  tours: {
+    openHouse: false,
+    threeDTour: false,
+    showcase: false,
+  },
+  parkingSpots: "Any",
+  garage: false,
+  squareFeetMin: "No Min",
+  squareFeetMax: "No Max",
+  lotSizeMin: "No Min",
+  lotSizeMax: "No Max",
+  yearBuiltMin: "",
+  yearBuiltMax: "",
+  basement: false,
+  singleStoryOnly: false,
+  communities55: "include",
+  amenities: {
+    ac: false,
+    pool: false,
+    waterfront: false,
+  },
+  view: {
+    city: false,
+    mountain: false,
+    park: false,
+    water: false,
+  },
+  commuteAddress: "",
+  commuteFiltersOpen: false,
+  commuteTime: "Any",
+  commuteMode: "drive",
+  daysOnMarket: "Any",
+  keywords: "",
+  propertyType: "Any",
+  beds: "Any",
+  baths: "Any",
+  matchScore: "Any",
+}
+
 type PropertyContextType = {
   properties: Property[];
   visitedIds: Set<string>;
@@ -64,6 +170,8 @@ type PropertyContextType = {
   updateHomeValueListing: (id: string, updates: Partial<HomeValueListing>) => void;
   activeHomeValueId: string | null;
   setActiveHomeValueId: (id: string | null) => void;
+  moreFilters: MoreFiltersState;
+  setMoreFilters: (filters: MoreFiltersState) => void;
 };
 
 const PropertyContext = createContext<PropertyContextType | undefined>(undefined);
@@ -83,6 +191,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   });
   const [homeValueListings, setHomeValueListings] = useState<HomeValueListing[]>(initialHomeValueListings);
   const [activeHomeValueId, setActiveHomeValueId] = useState<string | null>(initialHomeValueListings[0]?.id || null);
+  const [moreFilters, setMoreFilters] = useState<MoreFiltersState>(defaultMoreFilters);
 
   const toggleInterested = useCallback((propertyId: string) => {
     setProperties((current) =>
@@ -196,6 +305,8 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
         updateHomeValueListing,
         activeHomeValueId,
         setActiveHomeValueId,
+        moreFilters,
+        setMoreFilters,
       }}
     >
       {children}

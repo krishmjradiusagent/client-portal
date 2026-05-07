@@ -190,16 +190,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                             <span>{item.title}</span>
                           </Link>
                         </SidebarMenuButton>
-                        <SidebarMenuAction asChild className="right-1 hover:bg-slate-100 rounded-lg">
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="right-1 hover:bg-slate-100 rounded-lg">
+                            <ChevronsUpDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          </SidebarMenuAction>
+                        </CollapsibleTrigger>
+                        <SidebarMenuAction asChild className="right-7 hover:bg-slate-100 rounded-lg">
                           <Link href="/home-value?add=true">
                             <Plus className="size-3.5" />
                           </Link>
                         </SidebarMenuAction>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuAction className="right-7 hover:bg-slate-100 rounded-lg">
-                            <ChevronsUpDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          </SidebarMenuAction>
-                        </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub className="mr-0 pr-0">
                             {homeValueListings.map((listing) => (

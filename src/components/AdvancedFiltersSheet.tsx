@@ -16,14 +16,10 @@ import { Switch } from "./ui/switch";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { Checkbox } from "./ui/checkbox";
-import {
-  hoaOptions,
-  lotOptions,
-  moreFilterDefaults,
-  yearOptions
-} from "./mockData";
+import { MoreFiltersState, defaultMoreFilters } from "./PropertyContext";
+import { yearOptions, hoaOptions, lotOptions } from "./mockData";
 
-type Filters = typeof moreFilterDefaults;
+type Filters = MoreFiltersState;
 
 type Props = {
   open: boolean;
@@ -171,7 +167,7 @@ export function AdvancedFiltersSheet({ open, onClose, value, onSave, isEditMode 
         </ScrollArea>
 
         <SheetFooter className="px-6 py-4 border-t border-slate-100 bg-slate-50 gap-3">
-          <Button variant="outline" onClick={() => setDraft(moreFilterDefaults)} className="flex-1 border-slate-200">
+          <Button variant="outline" onClick={() => setDraft(defaultMoreFilters)} className="flex-1 border-slate-200">
             Reset
           </Button>
           <Button onClick={handleApply} className="flex-1">

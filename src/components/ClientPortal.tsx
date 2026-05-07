@@ -16,8 +16,7 @@ import { HomeValuePage } from "./HomeValuePage";
 import { MessagesPanel } from "./client-portal/MessagesPanel";
 import { WillowFloatingAssistant, type WillowContext } from "./WillowFloatingAssistant";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
-import { moreFilterDefaults } from "./mockData";
-import { usePropertyContext } from "./PropertyContext";
+import { usePropertyContext, type MoreFiltersState, defaultMoreFilters } from "./PropertyContext";
 
 const routeTitles: Record<RouteKey, string> = {
   search: "Search",
@@ -50,10 +49,7 @@ export function ClientPortal() {
   ];
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("2000000");
-  const [moreFilters, setMoreFilters] = useState({
-    ...moreFilterDefaults,
-    matchScore: "Any"
-  });
+  const [moreFilters, setMoreFilters] = useState<MoreFiltersState>(defaultMoreFilters);
   const [sortValue, setSortValue] = useState("default");
 
   const {
@@ -118,17 +114,24 @@ export function ClientPortal() {
       const matchesBaths = moreFilters.baths === "Any" || property.baths >= Number(moreFilters.baths.replace("+", ""));
       const matchesMatch = moreFilters.matchScore === "Any" || property.matchScore >= Number(moreFilters.matchScore.replace("+", ""));
 
-      const matchesYear =
-        moreFilters.yearBuilt === "Any" ||
-        (moreFilters.yearBuilt === "2015+" && property.yearBuilt >= 2015) ||
-        (moreFilters.yearBuilt === "2020+" && property.yearBuilt >= 2020) ||
-        (moreFilters.yearBuilt === "New build" && property.yearBuilt >= 2022);
+      const yearMin = moreFilters.yearBuiltMin === "" ? 0 : Number(moreFilters.yearBuiltMin);
+      const yearMax = moreFilters.yearBuiltMax === "" ? 9999 : Number(moreFilters.yearBuiltMax);
+      const matchesYear = property.yearBuilt >= yearMin && property.yearBuilt <= yearMax;
 
-      const matchesLot =
-        moreFilters.lot === "Any" ||
-        (moreFilters.lot === "Small lot" && property.lot !== "N/A" && parseFloat(property.lot) <= 0.12) ||
-        (moreFilters.lot === "Medium lot" && property.lot !== "N/A" && parseFloat(property.lot) > 0.12 && parseFloat(property.lot) <= 0.2) ||
-        (moreFilters.lot === "Large lot" && property.lot !== "N/A" && parseFloat(property.lot) > 0.2);
+      const lotSize = property.lot === "N/A" ? 0 : parseFloat(property.lot);
+      const isAcres = property.lot.includes("ac");
+      const lotSizeSqft = isAcres ? lotSize * 43560 : lotSize;
+
+      const parseLotSizeStr = (val: string) => {
+        if (val === "No Min") return 0;
+        if (val === "No Max") return Infinity;
+        if (val.includes("acres")) return Number(val.split(" ")[0]) * 43560;
+        return Number(val.split(" ")[0].replace(/,/g, ""));
+      };
+
+      const lotMin = parseLotSizeStr(moreFilters.lotSizeMin);
+      const lotMax = parseLotSizeStr(moreFilters.lotSizeMax);
+      const matchesLot = lotSizeSqft >= lotMin && lotSizeSqft <= lotMax;
 
       return matchesPrice && matchesLocation && matchesType && matchesBeds && matchesBaths && matchesMatch && matchesYear && matchesLot;
     });

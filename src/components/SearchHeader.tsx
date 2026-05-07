@@ -1,38 +1,35 @@
 "use client";
 
-import { Filter, Save, LocateFixed, Search, Map, Check, X, ChevronDown, Bed, Bath, Home, Sparkles, DollarSign, Pencil, Coffee, Baby, TrendingUp, Zap } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Filter, Save, LocateFixed, Search, Map, Check, X, ChevronDown, Bed, Bath, Home, Sparkles, DollarSign, Pencil, Coffee, Baby, TrendingUp, Zap, Car, Train, Bike, Footprints, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Badge } from "./ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { SaveSearchDialog } from "./SaveSearchDialog";
 import { EditSearchSheet } from "./EditSearchSheet";
-import { ControlPill } from "./ui/control-pill";
-import { useState } from "react";
+import { ControlPill } from "@/components/ui/control-pill";
+import { useState, useMemo } from "react";
+import { MoreFiltersState, defaultMoreFilters } from "./PropertyContext";
+import { MoreFiltersContent } from "./MoreFiltersContent";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "./ui/select";
-import { Checkbox } from "./ui/checkbox";
-import { Label } from "./ui/label";
-import { Separator } from "./ui/separator";
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { sortOptions } from "./mockData";
-import { Slider } from "./ui/slider";
 
 export type BoardMode = "search" | "myMatches" | "savedSearch" | "board";
 
@@ -51,8 +48,8 @@ type Props = {
   onUpdateSearch?: (search: any) => void;
   currentSearch?: any;
   resultsCount: number;
-  moreFilters: any;
-  setMoreFilters: (val: any) => void;
+  moreFilters: MoreFiltersState;
+  setMoreFilters: (val: MoreFiltersState) => void;
   drawingMode: boolean;
   onToggleDrawingMode: () => void;
   customBoundaryActive: boolean;
@@ -90,6 +87,69 @@ export function SearchHeader({
   const isSearchMode = mode === "search";
   const isSavedSearchBoard = mode === "savedSearch";
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const [localMoreFilters, setLocalMoreFilters] = useState<MoreFiltersState>(moreFilters);
+  const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(false);
+
+  const activeCount = useMemo(() => {
+    let count = 0;
+    if (moreFilters.maxHoa !== defaultMoreFilters.maxHoa) count++;
+    
+    // Listing Type (Only count if not default)
+    const lt = moreFilters.listingType;
+    const dlt = defaultMoreFilters.listingType;
+    if (lt.ownerPosted !== dlt.ownerPosted || 
+        lt.agentListed !== dlt.agentListed || 
+        lt.newConstruction !== dlt.newConstruction || 
+        lt.foreclosures !== dlt.foreclosures || 
+        lt.auctions !== dlt.auctions) count++;
+
+    // Listing Status (Only count if not default)
+    const ls = moreFilters.listingStatus;
+    const dls = defaultMoreFilters.listingStatus;
+    if (ls.comingSoon !== dls.comingSoon || 
+        ls.acceptingBackupOffers !== dls.acceptingBackupOffers || 
+        ls.pendingUnderContract !== dls.pendingUnderContract) count++;
+
+    // Tours
+    if (moreFilters.tours.openHouse || moreFilters.tours.threeDTour || moreFilters.tours.showcase) count++;
+    
+    if (moreFilters.parkingSpots !== defaultMoreFilters.parkingSpots) count++;
+    if (moreFilters.garage) count++;
+    if (moreFilters.squareFeetMin !== defaultMoreFilters.squareFeetMin) count++;
+    if (moreFilters.squareFeetMax !== defaultMoreFilters.squareFeetMax) count++;
+    if (moreFilters.lotSizeMin !== defaultMoreFilters.lotSizeMin) count++;
+    if (moreFilters.lotSizeMax !== defaultMoreFilters.lotSizeMax) count++;
+    if (moreFilters.yearBuiltMin !== "") count++;
+    if (moreFilters.yearBuiltMax !== "") count++;
+    if (moreFilters.basement) count++;
+    if (moreFilters.singleStoryOnly) count++;
+    if (moreFilters.communities55 !== defaultMoreFilters.communities55) count++;
+    
+    // Amenities
+    if (moreFilters.amenities.ac || moreFilters.amenities.pool || moreFilters.amenities.waterfront) count++;
+    
+    // View
+    if (moreFilters.view.city || moreFilters.view.mountain || moreFilters.view.park || moreFilters.view.water) count++;
+    
+    if (moreFilters.commuteAddress !== "") count++;
+    if (moreFilters.commuteTime !== defaultMoreFilters.commuteTime && moreFilters.commuteAddress !== "") count++;
+    if (moreFilters.daysOnMarket !== defaultMoreFilters.daysOnMarket) count++;
+    if (moreFilters.keywords !== "") count++;
+
+    return count;
+  }, [moreFilters]);
+
+  const handleApply = () => {
+    setMoreFilters(localMoreFilters);
+    setIsMoreFiltersOpen(false);
+  };
+
+  const handleReset = () => {
+    setLocalMoreFilters(defaultMoreFilters);
+  };
+
+  const isMoreFiltersActive = activeCount > 0;
 
   return (
     <div className="bg-white border-b border-slate-200">
@@ -123,6 +183,20 @@ export function SearchHeader({
         <div className="ml-auto flex min-w-0 items-center gap-2 overflow-x-auto no-scrollbar">
           {isSearchMode && (
             <div className="flex items-center gap-2 shrink-0">
+              {/* For sale */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <ControlPill 
+                    label="For sale"
+                    active
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem>For sale</DropdownMenuItem>
+                  <DropdownMenuItem>For rent</DropdownMenuItem>
+                  <DropdownMenuItem>Sold</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Price Chip */}
               <Popover>
@@ -132,7 +206,7 @@ export function SearchHeader({
                     label={minPrice !== "0" || maxPrice !== "2000000" 
                       ? `${minPrice === "0" ? "" : `$${Number(minPrice)/1000}K`}${minPrice !== "0" && maxPrice !== "2000000" ? "-" : ""}${maxPrice === "2000000" ? (minPrice === "0" ? "Price" : "+") : `$${Number(maxPrice)/1000}K`}` 
                       : "Price"}
-                    active={minPrice !== "0" || maxPrice !== "2000000"}
+                    active={!!(minPrice !== "0" || maxPrice !== "2000000")}
                   />
                 </PopoverTrigger>
                 <PopoverContent className="w-80 p-4" align="end">
@@ -208,64 +282,56 @@ export function SearchHeader({
                 </PopoverContent>
               </Popover>
 
-              {/* Beds Chip */}
+              {/* Beds & Baths Chip */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <ControlPill 
                     icon={<Bed className="h-4 w-4" />}
-                    label={moreFilters.beds && moreFilters.beds !== "Any" ? `${moreFilters.beds} beds` : "Beds"}
-                    active={moreFilters.beds && moreFilters.beds !== "Any"}
+                    label={(moreFilters.beds && moreFilters.beds !== "Any") || (moreFilters.baths && moreFilters.baths !== "Any") 
+                      ? `${moreFilters.beds !== "Any" ? moreFilters.beds : "0"} bd, ${moreFilters.baths !== "Any" ? moreFilters.baths : "0"} ba` 
+                      : "Beds & baths"}
+                    active={!!((moreFilters.beds && moreFilters.beds !== "Any") || (moreFilters.baths && moreFilters.baths !== "Any"))}
                   />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Beds</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup 
-                    value={moreFilters.beds} 
-                    onValueChange={(val) => setMoreFilters({ ...moreFilters, beds: val })}
-                  >
-                    <DropdownMenuRadioItem value="Any">Any beds</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="1+">1+ beds</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="2+">2+ beds</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="3+">3+ beds</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="4+">4+ beds</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="5+">5+ beds</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
+                <DropdownMenuContent align="end" className="w-56 p-3">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-semibold">Beds</Label>
+                      <ToggleGroup 
+                        type="single" 
+                        value={moreFilters.beds} 
+                        onValueChange={(val) => val && setMoreFilters({ ...moreFilters, beds: val })}
+                        className="justify-start"
+                      >
+                        {["Any", "1+", "2+", "3+", "4+"].map(v => (
+                          <ToggleGroupItem key={v} value={v} className="h-8 px-2.5 text-xs rounded-md">{v}</ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-semibold">Baths</Label>
+                      <ToggleGroup 
+                        type="single" 
+                        value={moreFilters.baths} 
+                        onValueChange={(val) => val && setMoreFilters({ ...moreFilters, baths: val })}
+                        className="justify-start"
+                      >
+                        {["Any", "1+", "1.5+", "2+", "3+"].map(v => (
+                          <ToggleGroupItem key={v} value={v} className="h-8 px-2.5 text-xs rounded-md">{v}</ToggleGroupItem>
+                        ))}
+                      </ToggleGroup>
+                    </div>
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Baths Chip */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ControlPill 
-                    icon={<Bath className="h-4 w-4" />}
-                    label={moreFilters.baths && moreFilters.baths !== "Any" ? `${moreFilters.baths} baths` : "Baths"}
-                    active={moreFilters.baths && moreFilters.baths !== "Any"}
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Baths</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup 
-                    value={moreFilters.baths} 
-                    onValueChange={(val) => setMoreFilters({ ...moreFilters, baths: val })}
-                  >
-                    <DropdownMenuRadioItem value="Any">Any baths</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="1+">1+ baths</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="2+">2+ baths</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="3+">3+ baths</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="4+">4+ baths</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Home Type Chip */}
+              {/* Property Type Chip */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <ControlPill 
                     icon={<Home className="h-4 w-4" />}
-                    label={moreFilters.propertyType !== "Any" ? moreFilters.propertyType : "Home type"}
-                    active={moreFilters.propertyType !== "Any"}
+                    label={moreFilters.propertyType !== "Any" ? moreFilters.propertyType : "Property type"}
+                    active={!!(moreFilters.propertyType && moreFilters.propertyType !== "Any")}
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -284,29 +350,65 @@ export function SearchHeader({
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Match Chip */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ControlPill 
-                    icon={<Sparkles className="h-4 w-4" />}
-                    label={moreFilters.matchScore && moreFilters.matchScore !== "Any" ? `${moreFilters.matchScore} match` : "Match"}
-                    active={moreFilters.matchScore && moreFilters.matchScore !== "Any"}
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Match Score</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup 
-                    value={moreFilters.matchScore} 
-                    onValueChange={(val) => setMoreFilters({ ...moreFilters, matchScore: val })}
-                  >
-                    <DropdownMenuRadioItem value="Any">Any match score</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="80+">80+ match score</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="90+">90+ match score</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="95+">95+ match score</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* More Filters */}
+              {isDesktop ? (
+                <Popover open={isMoreFiltersOpen} onOpenChange={setIsMoreFiltersOpen}>
+                  <PopoverTrigger asChild>
+                    <ControlPill 
+                      label={isMoreFiltersActive ? `More filters · ${activeCount}` : "More filters"}
+                      active={!!isMoreFiltersActive}
+                      icon={<ChevronDown className={cn("h-4 w-4 transition-transform", isMoreFiltersOpen && "rotate-180")} />}
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[740px] p-0" align="end">
+                    <MoreFiltersContent 
+                      filters={localMoreFilters} 
+                      onChange={setLocalMoreFilters} 
+                      onApply={handleApply}
+                      onReset={handleReset}
+                    />
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <Sheet open={isMoreFiltersOpen} onOpenChange={setIsMoreFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <ControlPill 
+                      label={isMoreFiltersActive ? `More filters · ${activeCount}` : "More filters"}
+                      active={!!isMoreFiltersActive}
+                    />
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[90vh] p-0 rounded-t-[20px]">
+                    <SheetHeader className="px-6 py-4 border-b">
+                      <SheetTitle>More filters</SheetTitle>
+                    </SheetHeader>
+                    <MoreFiltersContent 
+                      filters={localMoreFilters} 
+                      onChange={setLocalMoreFilters} 
+                      onApply={handleApply}
+                      onReset={handleReset}
+                    />
+                  </SheetContent>
+                </Sheet>
+              )}
+
+              {/* Save Search */}
+              <SaveSearchDialog 
+                onSave={onSaveSearch}
+                selectedLocation={selectedLocation}
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                activeFilters={{
+                  beds: moreFilters.beds,
+                  baths: moreFilters.baths,
+                  propertyType: moreFilters.propertyType,
+                  matchScore: "Any"
+                }}
+              >
+                <Button variant="ghost" size="sm" className="h-9 rounded-full px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold gap-2">
+                  <Save className="h-4 w-4" />
+                  Save search
+                </Button>
+              </SaveSearchDialog>
             </div>
           )}
 
@@ -356,3 +458,6 @@ export function SearchHeader({
     </div>
   );
 }
+
+
+
