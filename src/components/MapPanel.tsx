@@ -1,10 +1,9 @@
 "use client";
 
-import { Layers3, MapPinned, Crosshair, Pencil, Save, Map as MapIcon } from "lucide-react";
+import { Layers3, MapPinned, Pencil, Map as MapIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import type { Property } from "./mockData";
-import { SaveSearchDialog } from "./SaveSearchDialog";
 import { ControlPill } from "./ui/control-pill";
 
 type Props = {
@@ -17,10 +16,10 @@ type Props = {
   onMarkerClick: (property: Property) => void;
   onMapClick: () => void;
   mode?: string;
-  onSaveSearch: (name: string, frequency: string, emailAlerts: boolean) => void;
-  minPrice: string;
-  maxPrice: string;
-  moreFilters: any;
+  onSaveSearch?: (name: string, frequency: string, emailAlerts: boolean) => void;
+  minPrice?: string;
+  maxPrice?: string;
+  moreFilters?: any;
 };
 
 const layerLabels: Record<string, string> = {
@@ -68,30 +67,15 @@ export function MapPanel({
             active={drawingMode}
             onClick={() => onToggleDrawingMode()}
           />
-          
-          <SaveSearchDialog 
-            onSave={onSaveSearch} 
-            selectedLocation={selectedLocation} 
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            activeFilters={moreFilters}
-          >
-            <ControlPill 
-              icon={<Save className="h-4 w-4" />}
-              label="Save search"
-            />
-          </SaveSearchDialog>
+
+
         </div>
 
         {customBoundaryActive && !drawingMode && (
           <div className="absolute left-[18%] top-[18%] h-[46%] w-[38%] rounded-[36px] border-2 border-dashed border-slate-400 bg-slate-900/5 shadow-[0_0_0_9999px_rgba(15,23,42,0.06)] pointer-events-none" />
         )}
 
-        <div className="absolute right-6 top-5 rounded-2xl border border-white/40 bg-white/80 px-4 py-3 shadow-lg backdrop-blur">
-          <div className="text-xs font-medium uppercase tracking-[0.2em] text-slate-500">Map layer</div>
-          <div className="mt-1 text-sm font-semibold text-slate-900">{layerLabels[mapLayer]}</div>
-          <div className="mt-1 text-xs text-slate-500">Tap map while drawing to set a boundary.</div>
-        </div>
+
 
         {properties.map((property) => (
           <button
