@@ -221,8 +221,8 @@ export function ClientPortal() {
           />
           </div>
 
-          <section className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[minmax(420px,520px)_minmax(560px,1fr)]">
-            <aside className="h-full min-h-0 overflow-y-auto overscroll-contain bg-background">
+          <section className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[720px_minmax(0,1fr)]">
+            <aside className="h-full min-h-0 w-[720px] overflow-y-auto overscroll-contain bg-background">
               <ResultsPanel
                 route={activeRoute}
                 properties={routeProperties}

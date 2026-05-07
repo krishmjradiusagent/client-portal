@@ -68,11 +68,9 @@ export function ResultsPanel({
   const visibleCount = properties.length;
 
   return (
-    <div className="flex-1 border-r border-slate-200 bg-slate-50 flex flex-col min-h-full">
+    <div className="flex-1 bg-slate-50 flex flex-col min-h-full">
       <div className="flex-1">
-        {/* Page Title Row (Left Column) */}
-
-        <div className="p-5">
+        <div className="p-4">
           <div className="grid grid-cols-2 gap-4">
 
           {properties.map((property) => (

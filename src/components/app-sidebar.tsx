@@ -92,8 +92,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     items: [
       { title: "Search", url: "/search", icon: Search },
       { title: "My Matches", url: "/matches", icon: Sparkles },
-      { title: "Home Value", url: "/home-value", icon: Home },
       { title: "My Searches", url: "/my-searches", icon: LayoutGrid },
+      { title: "Home Value", url: "/home-value", icon: Home },
+      { title: "Messages", url: "/messages", icon: MessageSquare },
     ],
   } as const
 
@@ -183,18 +184,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   return (
                     <Collapsible key={item.title} defaultOpen={homeValueListings.length > 0} className="group/collapsible">
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9">
+                        <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9 pr-14">
+                          <Link href={item.url}>
                             <item.icon className="size-4" />
                             <span>{item.title}</span>
-                            <ChevronsUpDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <SidebarMenuAction asChild className="hover:bg-slate-100 rounded-lg">
+                          </Link>
+                        </SidebarMenuButton>
+                        <SidebarMenuAction asChild className="right-1 hover:bg-slate-100 rounded-lg">
                           <Link href="/home-value?add=true">
                             <Plus className="size-3.5" />
                           </Link>
                         </SidebarMenuAction>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="right-7 hover:bg-slate-100 rounded-lg">
+                            <ChevronsUpDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          </SidebarMenuAction>
+                        </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub className="mr-0 pr-0">
                             {homeValueListings.map((listing) => (
@@ -229,12 +234,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   return (
                     <Collapsible key={item.title} defaultOpen className="group/collapsible">
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9">
+                        <SidebarMenuButton 
+                          asChild
+                          tooltip={item.title} 
+                          isActive={isActive(pathname, item.url) || (item.title === "My Searches" && isActive(pathname, "/searches"))} 
+                          className="h-9 pr-8"
+                        >
+                          <Link href={item.url}>
                             <item.icon className="size-4" />
                             <span>{item.title}</span>
-                            <ChevronsUpDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-                          </SidebarMenuButton>
+                          </Link>
+                        </SidebarMenuButton>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="right-1 hover:bg-slate-100 rounded-lg">
+                            <ChevronsUpDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                          </SidebarMenuAction>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub className="mr-0 pr-0">
@@ -242,7 +256,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               <SidebarMenuSubItem key={search.id}>
                                 <SidebarMenuSubButton 
                                   asChild 
-                                  isActive={selectedSavedSearchId === search.id && isActive(pathname, item.url)}
+                                  isActive={selectedSavedSearchId === search.id && (isActive(pathname, item.url) || isActive(pathname, "/searches"))}
                                   onClick={() => setSelectedSavedSearchId(search.id)}
                                   className="h-8 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
                                 >
@@ -282,21 +296,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Standalone Messages */}
-        <SidebarGroup className="py-1">
-          <SidebarMenu className="gap-0.5">
-            <SidebarMenuItem>
-              <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
-                <SidebarMenuButton asChild tooltip="Messages" isActive={isActive(pathname, "/messages")} className="h-9 transition-colors duration-200">
-                  <Link href="/messages">
-                    <MessageSquare className="size-4" />
-                    <span>Messages</span>
-                  </Link>
-                </SidebarMenuButton>
-              </motion.div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
 
         {/* Engagement Section - Collapsible */}
         <Collapsible defaultOpen className="group/collapsible">
