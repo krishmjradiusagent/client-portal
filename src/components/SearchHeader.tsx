@@ -188,7 +188,6 @@ export function SearchHeader({
                 <DropdownMenuTrigger asChild>
                   <ControlPill 
                     label="For sale"
-                    active
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
@@ -418,7 +417,6 @@ export function SearchHeader({
               <DropdownMenuTrigger asChild>
                 <ControlPill 
                   label={sortOptions.find(opt => opt.value === sortValue)?.label || "Sort by"} 
-                  active 
                 />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72">
