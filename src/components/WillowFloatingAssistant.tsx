@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Infinity as InfinityIcon, Send, X, Sparkles } from "lucide-react";
+import { Send, X, Sparkles } from "lucide-react";
+import { InfinityLoop } from "./loading-ui/infinity";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
@@ -138,8 +139,8 @@ export function WillowFloatingAssistant({ context = "default", className }: Will
         <Card className="w-80 sm:w-96 mb-4 shadow-2xl border-slate-200 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 bg-slate-50 rounded-t-lg">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
-                <InfinityIcon className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                <InfinityLoop className="w-6 h-6 text-white" />
               </div>
               <div>
                 <CardTitle className="text-sm font-semibold">{copy.title}</CardTitle>
@@ -225,10 +226,10 @@ export function WillowFloatingAssistant({ context = "default", className }: Will
               size="64px"
               animationDuration={12}
               colors={{
-                bg: "oklch(18% 0.02 264)",
-                c1: "oklch(55% 0.18 280)",
-                c2: "oklch(50% 0.15 230)",
-                c3: "oklch(45% 0.12 320)",
+                bg: "oklch(10% 0.02 264)", // Deeper black
+                c1: "oklch(60% 0.25 280)", // More vibrant purple/blue
+                c2: "oklch(55% 0.22 230)", // More vibrant cyan
+                c3: "oklch(50% 0.20 320)", // More vibrant pink/magenta
               }}
             />
           </div>
@@ -255,7 +256,7 @@ export function WillowFloatingAssistant({ context = "default", className }: Will
                 ease: [0.32, 0.72, 0, 1],
               }}
             >
-              <InfinityIcon className="w-9 h-9 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
+              <InfinityLoop className="w-12 h-12 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]" />
             </motion.div>
           )}
         </div>
