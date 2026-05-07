@@ -32,7 +32,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { sortOptions } from "./mockData";
 import { useAuth } from "@/lib/auth";
 
-export type BoardMode = "search" | "myMatches" | "savedSearch" | "board";
+export type BoardMode = "search" | "savedSearch" | "board";
 
 type Props = {
   mode?: BoardMode;

@@ -161,8 +161,24 @@ type PropertyContextType = {
   propertyActivity: Record<string, { type: string; user: string; time: string }[]>;
   addPropertyActivity: (propertyId: string, activity: { type: string; user: string }) => void;
   recentlyViewedIds: string[];
-  profileData: { name: string; email: string; phone: string; contactMethod: string };
-  updateProfileData: (data: Partial<{ name: string; email: string; phone: string; contactMethod: string }>) => void;
+  profileData: { 
+    name: string; 
+    email: string; 
+    phone: string; 
+    contactMethod: string; 
+    commuteAddress: string;
+    commuteMode: "drive" | "walk" | "transit" | "bike";
+    maxCommuteTime: string;
+  };
+  updateProfileData: (data: Partial<{ 
+    name: string; 
+    email: string; 
+    phone: string; 
+    contactMethod: string; 
+    commuteAddress: string;
+    commuteMode: "drive" | "walk" | "transit" | "bike";
+    maxCommuteTime: string;
+  }>) => void;
   interestedCount: number;
   notInterestedCount: number;
   recentlyViewedCount: number;
@@ -176,6 +192,9 @@ type PropertyContextType = {
   setSelectedPropertyId: (id: string | null) => void;
   moreFilters: MoreFiltersState;
   setMoreFilters: (filters: MoreFiltersState) => void;
+  selectedCompIds: string[];
+  toggleCompSelection: (id: string) => void;
+  clearCompSelection: () => void;
 };
 
 const PropertyContext = createContext<PropertyContextType | undefined>(undefined);
@@ -193,12 +212,14 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     email: "michael@example.com",
     phone: "(512) 555-0148",
     contactMethod: "email",
+    commuteAddress: "782 Park Avenue, New York, NY",
+    commuteMode: "drive" as const,
+    maxCommuteTime: "30",
   });
   const [homeValueListings, setHomeValueListings] = useState<HomeValueListing[]>(initialHomeValueListings);
   const [activeHomeValueId, setActiveHomeValueId] = useState<string | null>(initialHomeValueListings[0]?.id || null);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [moreFilters, setMoreFilters] = useState<MoreFiltersState>(defaultMoreFilters);
-
   const toggleInterested = useCallback((propertyId: string) => {
     setProperties((current) =>
       current.map((p) => {
@@ -292,6 +313,77 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectedSavedSearchId]);
 
+  const [selectedCompIds, setSelectedCompIds] = useState<string[]>([]);
+
+  // Load selected comps from localStorage on mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem("radius_selected_comps");
+    if (saved) {
+      try {
+        setSelectedCompIds(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved comps", e);
+      }
+    }
+  }, []);
+
+  // Sync selected comps to localStorage on change
+  React.useEffect(() => {
+    localStorage.setItem("radius_selected_comps", JSON.stringify(selectedCompIds));
+  }, [selectedCompIds]);
+
+  const toggleCompSelection = useCallback((id: string) => {
+    setSelectedCompIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((a) => a !== id)
+        : prev.length < 3
+        ? [...prev, id]
+        : prev
+    );
+  }, []);
+
+  const clearCompSelection = useCallback(() => {
+    setSelectedCompIds([]);
+  }, []);
+
+  const scoredProperties = useMemo(() => {
+    return properties.map(property => {
+      let score = property.matchScore;
+      
+      // Only adjust if commute address is set
+      if (profileData.commuteAddress) {
+        // Simulate distance based on marker positions (0-100 scale)
+        // Let's assume a "work" location at 50, 50 for simulation
+        const workX = 50;
+        const workY = 50;
+        const propX = parseFloat(property.markerLeft);
+        const propY = parseFloat(property.markerTop);
+        
+        const dist = Math.sqrt(Math.pow(propX - workX, 2) + Math.pow(propY - workY, 2));
+        
+        // Simulating commute time: dist * 2 minutes
+        const commuteMinutes = Math.round(dist * 1.5);
+        const maxTime = parseInt(profileData.maxCommuteTime) || 30;
+        
+        if (commuteMinutes <= maxTime) {
+          score += 5; // Bonus for being within max commute
+        } else {
+          score -= Math.min(10, Math.floor((commuteMinutes - maxTime) / 5)); // Penalty for being over
+        }
+        
+        // Mode preference bonus
+        if (profileData.commuteMode === "walk" && property.tags.includes("Walkable")) {
+          score += 3;
+        }
+        if (profileData.commuteMode === "drive" && property.tags.includes("EV ready")) {
+          score += 2;
+        }
+      }
+      
+      return { ...property, matchScore: Math.min(100, Math.max(0, score)) };
+    });
+  }, [properties, profileData.commuteAddress, profileData.commuteMode, profileData.maxCommuteTime]);
+
   const counts = useMemo(() => {
     return {
       interested: properties.filter((p) => p.status === "interested").length,
@@ -303,7 +395,7 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
   return (
     <PropertyContext.Provider
       value={{
-        properties,
+        properties: scoredProperties,
         visitedIds,
         savedSearches,
         selectedSavedSearchId,
@@ -334,6 +426,9 @@ export function PropertyProvider({ children }: { children: React.ReactNode }) {
         setSelectedPropertyId,
         moreFilters,
         setMoreFilters,
+        selectedCompIds,
+        toggleCompSelection,
+        clearCompSelection,
       }}
     >
       {children}

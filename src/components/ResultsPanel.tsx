@@ -28,8 +28,6 @@ type Props = {
 
 function sectionCopy(route: RouteKey, count: number, selectedSavedSearch?: SavedSearch) {
   switch (route) {
-    case "matches":
-      return { title: "AI Top Matches", description: "Curated daily based on your search behavior." };
     case "interested":
       return { title: "Interested", description: "Homes you've liked for easy follow-up." };
     case "not-interested":

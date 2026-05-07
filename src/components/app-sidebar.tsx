@@ -95,7 +95,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     label: "SEARCHES",
     items: [
       { title: "Search", url: "/search", icon: Search },
-      { title: "My Matches", url: "/matches", icon: Sparkles },
       { title: "My Searches", url: "/my-searches", icon: LayoutGrid },
       { title: "Home Value", url: "/home-value", icon: Home },
       { title: "Messages", url: "/messages", icon: MessageSquare },

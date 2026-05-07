@@ -7,7 +7,7 @@ import { ResultsPanel } from "./ResultsPanel";
 import { MapPanel } from "./MapPanel";
 import { SaveSearchDialog } from "./SaveSearchDialog";
 
-export type BoardMode = "search" | "myMatches" | "savedSearch" | "board";
+export type BoardMode = "search" | "savedSearch" | "board";
 import { AdvancedFiltersSheet } from "./AdvancedFiltersSheet";
 import { PropertyDetailDialog } from "./PropertyDetailDialog";
 import { ProfilePage } from "./ProfilePage";
@@ -22,7 +22,6 @@ import { useAuth } from "@/lib/auth";
 
 const routeTitles: Record<RouteKey, string> = {
   search: "Search",
-  matches: "My Matches",
   "my-searches": "My Searches",
   interested: "Interested",
   messages: "Messages",
@@ -213,7 +212,7 @@ export function ClientPortal() {
             mode={
               activeRoute === "my-searches" && selectedSavedSearchId
                 ? "savedSearch"
-                : ["matches", "interested", "not-interested", "recently-viewed"].includes(activeRoute)
+                : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
                   ? "board"
                   : "search"
             }
@@ -266,33 +265,27 @@ export function ClientPortal() {
                 selectedLocation={selectedLocation}
                 onSaveSearch={handleSaveSearch}
                 mode={
-                  activeRoute === "matches"
-                    ? "board"
-                    : activeRoute === "my-searches"
-                      ? "savedSearch"
-                      : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
-                        ? "board"
-                        : "search"
+                  activeRoute === "my-searches"
+                    ? "savedSearch"
+                    : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
+                      ? "board"
+                      : "search"
                 }
                 title={
-                  activeRoute === "matches"
-                    ? "My Matches"
-                    : activeRoute === "my-searches"
-                      ? selectedSavedSearch?.name
-                      : routeTitles[activeRoute]
+                  activeRoute === "my-searches"
+                    ? selectedSavedSearch?.name
+                    : routeTitles[activeRoute]
                 }
               />
             </aside>
             <div className="relative h-full min-h-0 overflow-hidden border-l border-border">
               <MapPanel
                 mode={
-                  activeRoute === "matches"
-                    ? "myMatches"
-                    : (activeRoute === "my-searches" && selectedSavedSearch)
-                      ? "savedSearch"
-                      : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
-                        ? "board"
-                        : "search"
+                  (activeRoute === "my-searches" && selectedSavedSearch)
+                    ? "savedSearch"
+                    : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
+                      ? "board"
+                      : "search"
                 }
                 properties={routeProperties}
                 drawingMode={drawingMode}

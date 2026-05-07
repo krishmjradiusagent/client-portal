@@ -1,6 +1,5 @@
 export type RouteKey =
   | "search"
-  | "matches"
   | "my-searches"
   | "home-value"
   | "interested"
@@ -12,6 +11,19 @@ export type RouteKey =
   | "recently-viewed";
 
 export type PropertyStatus = "search" | "interested" | "notInterested";
+
+export interface CompProperty {
+  address: string;
+  price: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  status: string;
+  meta: string;
+  image: string;
+  markerTop: string;
+  markerLeft: string;
+}
 
 export type Property = {
   id: string;
@@ -165,11 +177,11 @@ export const properties: Property[] = [
     mlsStatus: "ACT",
     status: "search",
     type: "Townhome",
-    image: "/images/properties/prop-1-1.png",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-1-1.png",
-      "/images/properties/prop-1-2.png",
-      "/images/properties/prop-1-3.png"
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "38%",
     markerLeft: "52%",
@@ -194,11 +206,11 @@ export const properties: Property[] = [
     mlsStatus: "ACT",
     status: "search",
     type: "House",
-    image: "/images/properties/prop-2-1.png",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-2-1.png",
-      "/images/properties/prop-2-2.png",
-      "/images/properties/prop-2-3.png"
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600585154526-990dcea4d4d1?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "42%",
     markerLeft: "60%",
@@ -222,11 +234,11 @@ export const properties: Property[] = [
     mlsStatus: "CS",
     status: "search",
     type: "House",
-    image: "/images/properties/prop-3-1.png",
+    image: "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-3-1.png",
-      "/images/properties/prop-3-2.png",
-      "/images/properties/prop-3-3.png"
+      "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600607687940-c52dd0d4405c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "40%",
     markerLeft: "48%",
@@ -250,11 +262,11 @@ export const properties: Property[] = [
     mlsStatus: "AC",
     status: "search",
     type: "House",
-    image: "/images/properties/prop-4-1.png",
+    image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-4-1.png",
-      "/images/properties/prop-4-2.png",
-      "/images/properties/prop-4-3.png"
+      "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "46%",
     markerLeft: "42%",
@@ -278,11 +290,11 @@ export const properties: Property[] = [
     mlsStatus: "PND",
     status: "search",
     type: "Condo",
-    image: "/images/properties/prop-5-1.png",
+    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-5-1.png",
-      "/images/properties/prop-1-2.png",
-      "/images/properties/prop-1-3.png"
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "44%",
     markerLeft: "58%",
@@ -307,11 +319,11 @@ export const properties: Property[] = [
     mlsStatus: "CS",
     status: "search",
     type: "House",
-    image: "/images/properties/prop-6-1.png",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-6-1.png",
-      "/images/properties/prop-2-1.png",
-      "/images/properties/prop-2-3.png"
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600585154526-990dcea4d4d1?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "35%",
     markerLeft: "45%",
@@ -336,11 +348,11 @@ export const properties: Property[] = [
     mlsStatus: "ACT",
     status: "search",
     type: "House",
-    image: "/images/properties/prop-7-1.png",
+    image: "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-7-1.png",
-      "/images/properties/prop-3-1.png",
-      "/images/properties/prop-3-3.png"
+      "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600607687940-c52dd0d4405c?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "41%",
     markerLeft: "55%",
@@ -365,11 +377,11 @@ export const properties: Property[] = [
     mlsStatus: "ACT",
     status: "search",
     type: "Condo",
-    image: "/images/properties/prop-8-1.png",
+    image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=800&auto=format&fit=crop",
     images: [
-      "/images/properties/prop-8-1.png",
-      "/images/properties/prop-4-1.png",
-      "/images/properties/prop-4-3.png"
+      "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1480074568708-e7b720bb3f09?q=80&w=800&auto=format&fit=crop"
     ],
     markerTop: "43%",
     markerLeft: "51%",
@@ -406,7 +418,7 @@ export const initialHomeValueListings: HomeValueListing[] = [
     city: "Austin",
     state: "TX",
     zip: "78702",
-    imageUrl: "/images/properties/prop-5-1.png",
+    imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop",
     estimate: 645000,
     beds: 2,
     baths: 2,
@@ -420,12 +432,90 @@ export const initialHomeValueListings: HomeValueListing[] = [
     city: "Austin",
     state: "TX",
     zip: "78704",
-    imageUrl: "/images/properties/prop-1-1.png",
+    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
     estimate: 895000,
     beds: 3,
     baths: 2,
     sqft: 1824,
     status: "Off Market",
     lastUpdated: "5 days ago"
+  }
+];
+
+export const recentlyListedData: CompProperty[] = [
+  {
+    address: "2101 S Congress Ave",
+    price: "$895,000",
+    beds: 3,
+    baths: 2,
+    sqft: 1824,
+    status: "Active",
+    meta: "0.4 mi away",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
+    markerTop: "42%",
+    markerLeft: "45%",
+  },
+  {
+    address: "4208 Hyde Park Rd",
+    price: "$1,140,000",
+    beds: 4,
+    baths: 3,
+    sqft: 2460,
+    status: "Active",
+    meta: "0.8 mi away",
+    image: "https://images.unsplash.com/photo-1600585154526-990dcea4d4d1?q=80&w=600&auto=format&fit=crop",
+    markerTop: "38%",
+    markerLeft: "52%",
+  },
+  {
+    address: "1502 Mueller Blvd",
+    price: "$925,000",
+    beds: 3,
+    baths: 3,
+    sqft: 2100,
+    status: "Coming Soon",
+    meta: "1.2 mi away",
+    image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=600&auto=format&fit=crop",
+    markerTop: "45%",
+    markerLeft: "58%",
+  }
+];
+
+export const recentlySoldData: CompProperty[] = [
+  {
+    address: "1205 E 7th St",
+    price: "$645,000",
+    beds: 2,
+    baths: 2,
+    sqft: 1150,
+    status: "Sold",
+    meta: "Sold 2 days ago",
+    image: "https://images.unsplash.com/photo-1600566753190-17f0bb2a6c3e?q=80&w=600&auto=format&fit=crop",
+    markerTop: "48%",
+    markerLeft: "42%",
+  },
+  {
+    address: "804 Congress Ave",
+    price: "$1,250,000",
+    beds: 2,
+    baths: 2,
+    sqft: 1450,
+    status: "Sold",
+    meta: "Sold 5 days ago",
+    image: "https://images.unsplash.com/photo-1600607687940-c52dd0d4405c?q=80&w=600&auto=format&fit=crop",
+    markerTop: "35%",
+    markerLeft: "51%",
+  },
+  {
+    address: "702 Wlake Dr",
+    price: "$2,450,000",
+    beds: 5,
+    baths: 4,
+    sqft: 4200,
+    status: "Sold",
+    meta: "Sold 1 week ago",
+    image: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=600&auto=format&fit=crop",
+    markerTop: "40%",
+    markerLeft: "48%",
   }
 ];

@@ -19,6 +19,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Separator } from "./ui/separator";
 import { useAuth } from "@/lib/auth";
+import { AddressAutocomplete } from "./ui/address-autocomplete";
+import { Train, Car, Bike, Footprints } from "lucide-react";
 
 export function ProfilePage() {
   const { 
@@ -245,6 +247,82 @@ export function ProfilePage() {
                     <ToggleGroupItem value="text" aria-label="Text" className="data-[state=on]:bg-white data-[state=on]:shadow-sm">Text</ToggleGroupItem>
                     <ToggleGroupItem value="phone" aria-label="Phone" className="data-[state=on]:bg-white data-[state=on]:shadow-sm">Phone</ToggleGroupItem>
                   </ToggleGroup>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Commute Information */}
+            <Card className="border-slate-200 shadow-sm">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-slate-400" />
+                  <CardTitle className="text-lg">Commute & Lifestyle</CardTitle>
+                </div>
+                <CardDescription>We use your primary commute to calculate drive times for matches.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-slate-600">Primary Commute Destination</Label>
+                  <AddressAutocomplete 
+                    value={profileData.commuteAddress} 
+                    onChange={(val) => updateProfileData({ commuteAddress: val })} 
+                    placeholder="Enter work or school address..."
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    This address is private and only used for personalized commute calculations.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                  <div className="space-y-3">
+                    <Label className="text-slate-600">Preferred Mode</Label>
+                    <div className="flex gap-2 bg-slate-50 p-1 rounded-lg border border-slate-100">
+                      {[
+                        { id: "drive", icon: Car, label: "Drive" },
+                        { id: "transit", icon: Train, label: "Transit" },
+                        { id: "bike", icon: Bike, label: "Bike" },
+                        { id: "walk", icon: Footprints, label: "Walk" },
+                      ].map((mode) => (
+                        <TooltipProvider key={mode.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className={cn(
+                                  "h-9 w-9 transition-all duration-200",
+                                  profileData.commuteMode === mode.id 
+                                    ? "bg-white shadow-sm text-primary scale-110" 
+                                    : "text-slate-400 hover:text-slate-600"
+                                )}
+                                onClick={() => updateProfileData({ commuteMode: mode.id as any })}
+                              >
+                                <mode.icon className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{mode.label}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-slate-600">Max Commute Time</Label>
+                    <Select 
+                      value={profileData.maxCommuteTime} 
+                      onValueChange={(val) => updateProfileData({ maxCommuteTime: val })}
+                    >
+                      <SelectTrigger className="bg-slate-50">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="15">15 minutes</SelectItem>
+                        <SelectItem value="30">30 minutes</SelectItem>
+                        <SelectItem value="45">45 minutes</SelectItem>
+                        <SelectItem value="60">60 minutes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </CardContent>
             </Card>

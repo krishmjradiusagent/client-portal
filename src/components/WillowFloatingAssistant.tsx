@@ -19,7 +19,6 @@ export type WillowContext =
   | "listing"
   | "interested-homes"
   | "not-interested-homes"
-  | "matches"
   | "profile"
   | "settings"
   | "default";
@@ -27,7 +26,7 @@ export type WillowContext =
 const WILLOW_CONTEXT_COPY = {
   search: {
     title: "Willow AI",
-    subtitle: "Ask about this search, filters, matches, or neighborhoods.",
+    subtitle: "Ask about this search, filters, or neighborhoods.",
     placeholder: "Ask Willow about this search..."
   },
   "my-searches": {
@@ -54,11 +53,6 @@ const WILLOW_CONTEXT_COPY = {
     title: "Willow AI",
     subtitle: "Review rejected homes and refine preferences.",
     placeholder: "Ask Willow about rejected homes..."
-  },
-  matches: {
-    title: "Willow AI",
-    subtitle: "Understand why these homes matched your preferences.",
-    placeholder: "Ask Willow about these matches..."
   },
   profile: {
     title: "Willow AI",

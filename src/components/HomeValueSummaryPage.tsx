@@ -80,7 +80,7 @@ export function HomeValueSummaryPage() {
                             ${listing.estimate?.toLocaleString()}
                           </p>
                         </div>
-                        <div className="flex items-center gap-1 text-emerald-600 font-bold text-[8px] bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100 scale-90 origin-bottom-right">
+                        <div className="flex items-center gap-1 text-emerald-600 font-bold text-[8px] bg-[#E6F8F1] px-2 py-0.5 rounded-full scale-90 origin-bottom-right">
                           <TrendingUp className="w-2 h-2" />
                           <span>+2.4%</span>
                         </div>

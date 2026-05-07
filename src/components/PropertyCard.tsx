@@ -18,9 +18,20 @@ type Props = {
   onDislike: () => void;
   route: string;
   isHomeValue?: boolean;
+  variant?: "default" | "marketActivity";
+  showActions?: boolean;
 };
 
-export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHomeValue }: Props) {
+export function PropertyCard({ 
+  property, 
+  onOpen, 
+  onLike, 
+  onDislike, 
+  route, 
+  isHomeValue,
+  variant = "default",
+  showActions = true
+}: Props) {
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
   const { requireAuth } = useAuth();
   const liked = property.status === "interested";
@@ -32,6 +43,8 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
   const signalLabel = isPriceCut ? "PRICE CUT" : isNew ? "NEW" : null;
   const showSignal = !!signalLabel && !isHomeValue;
 
+  const isMarketActivity = variant === "marketActivity";
+  
   // MLS Status Mapping (Exactly 1)
   const mlsStatusMap: Record<string, string> = {
     "ACT": "ACTIVE",
@@ -83,8 +96,14 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
   };
 
   return (
-    <Card className="overflow-hidden border-slate-200/60 rounded-[24px] transition hover:-translate-y-0.5 hover:shadow-lg bg-white group">
-      <div className="relative h-48 w-full overflow-hidden bg-slate-50">
+    <Card className={cn(
+      "overflow-hidden border-slate-200/60 rounded-[24px] transition hover:-translate-y-0.5 hover:shadow-lg bg-white group",
+      isMarketActivity && "rounded-[18px]"
+    )}>
+      <div className={cn(
+        "relative w-full overflow-hidden bg-slate-50",
+        isMarketActivity ? "h-40" : "h-48"
+      )}>
         <AnimatePresence mode="wait">
           {hasImages ? (
             <motion.img
@@ -97,18 +116,24 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
               transition={{ duration: 0.3 }}
               className="h-full w-full object-cover cursor-pointer"
               onClick={onOpen}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop";
+              }}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-from),_var(--tw-gradient-to))] from-slate-50 to-slate-100/50 cursor-pointer" onClick={onOpen}>
-              <div className="text-center space-y-3">
-                <div className="relative mx-auto">
-                  <Home className="h-12 w-12 text-slate-200" />
-                  <div className="absolute -inset-1 bg-white/20 blur-xl rounded-full" />
-                </div>
-                <span className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">
-                  Image Pending
+            <div className="flex h-full w-full items-center justify-center bg-slate-100 cursor-pointer" onClick={onOpen}>
+              <div className="text-center space-y-2">
+                <Home className="h-10 w-10 text-slate-300 mx-auto" />
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  Photo Coming Soon
                 </span>
               </div>
+              <img 
+                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800&auto=format&fit=crop"
+                alt="Fallback"
+                className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+              />
             </div>
           )}
         </AnimatePresence>
@@ -159,12 +184,6 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
                 "relative overflow-hidden px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider border flex-shrink-0",
                 getSignalStyles()
               )}>
-                {signalLabel === "NEW" && (
-                  <div className="absolute inset-0 shiny pointer-events-none opacity-90 bg-[linear-gradient(110deg,transparent,35%,rgba(255,215,128,0.72),50%,rgba(255,245,190,0.58),65%,transparent)] bg-[length:200%_100%]" />
-                )}
-                {signalLabel === "PRICE CUT" && (
-                  <div className="absolute inset-0 shiny pointer-events-none opacity-90 bg-[linear-gradient(110deg,transparent,35%,rgba(52,211,153,0.34),50%,rgba(187,247,208,0.52),65%,transparent)] bg-[length:200%_100%]" />
-                )}
                 <span className="relative z-10 whitespace-nowrap">{signalLabel}</span>
               </Badge>
             )}
@@ -187,7 +206,7 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
           </div>
           
           {!isHomeValue && (
-            <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 pointer-events-auto ml-auto">
+            <Badge variant="secondary" className="bg-[#E6F8F1] text-[#00A36C] border-none rounded-full px-2 py-0.5 text-[10px] font-bold flex items-center gap-1 pointer-events-auto ml-auto">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5">
                 <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
               </svg>
@@ -198,69 +217,83 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
 
         {/* Floating Price Badge */}
         <div className="absolute bottom-3 right-3 pointer-events-none">
-          <Badge variant="secondary" className="bg-white/95 text-[#4F46E5] border-none px-3 py-1.5 text-sm font-bold shadow-sm pointer-events-auto flex items-center gap-1.5">
+          <Badge variant="secondary" className={cn(
+            "bg-white/95 border-none shadow-sm pointer-events-auto flex items-center gap-1.5",
+            isMarketActivity ? "px-2 py-1 text-[12px] font-extrabold text-[#4F46E5]" : "px-3 py-1.5 text-sm font-bold text-[#4F46E5]"
+          )}>
             {isHomeValue && <span className="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Est. Value</span>}
             {formattedPrice}
           </Badge>
         </div>
       </div>
 
-      <div className="p-5 space-y-4">
+      <div className={cn(
+        "space-y-4",
+        isMarketActivity ? "p-3 pt-3 pb-2" : "p-5"
+      )}>
         {/* Address Row */}
         <div className="min-w-0">
-          <h3 className="text-[17px] font-extrabold text-slate-900 leading-tight">
+          <h3 className={cn(
+            "font-extrabold text-slate-900 leading-tight",
+            isMarketActivity ? "text-[15px]" : "text-[17px]"
+          )}>
             {property.address}
           </h3>
         </div>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-5 text-[13px] text-slate-500 font-medium">
+        <div className={cn(
+          "flex items-center gap-4 text-slate-500 font-medium",
+          isMarketActivity ? "text-[11px]" : "text-[13px]"
+        )}>
           <div className="flex items-center gap-1.5">
-            <Bed className="h-4 w-4 text-slate-300" />
+            <Bed className="h-3.5 w-3.5 text-slate-300" />
             <span><span className="text-slate-900 font-bold">{property.beds}</span> bd</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Bath className="h-4 w-4 text-slate-300" />
+            <Bath className="h-3.5 w-3.5 text-slate-300" />
             <span><span className="text-slate-900 font-bold">{property.baths}</span> ba</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Maximize className="h-4 w-4 text-slate-300" />
-            <span><span className="text-slate-900 font-bold">{property.sqft.toLocaleString()}</span> Sq. ft</span>
+            <Maximize className="h-3.5 w-3.5 text-slate-300" />
+            <span><span className="text-slate-900 font-bold">{property.sqft.toLocaleString()}</span> sqft</span>
           </div>
         </div>
 
         {/* Actions Row */}
-        <div className="flex items-center gap-2">
-          <Button
-            className={cn(
-              "flex-1 h-12 rounded-2xl font-bold text-sm transition-all shadow-sm",
-              liked 
-                ? "bg-red-600 hover:bg-red-700 text-white shadow-red-100 border-transparent" 
-                : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              requireAuth("favorite_property", onLike);
-            }}
-          >
-            <Heart className={cn("h-4 w-4 mr-2", liked ? "fill-current text-white" : "text-slate-400")} />
-            Interested
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              "h-12 w-12 rounded-2xl border-slate-200 bg-[#F8FAFC] text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all",
-              disliked && "border-red-200 bg-red-50 text-red-600"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              requireAuth("reject_property", onDislike);
-            }}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
+        {showActions && (
+          <div className="flex items-center gap-2">
+            <Button
+              className={cn(
+                "flex-1 h-12 rounded-2xl font-bold text-sm transition-all shadow-sm",
+                liked 
+                  ? "bg-red-600 hover:bg-red-700 text-white shadow-red-100 border-transparent" 
+                  : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                requireAuth("favorite_property", onLike);
+              }}
+            >
+              <Heart className={cn("h-4 w-4 mr-2", liked ? "fill-current text-white" : "text-slate-400")} />
+              Interested
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                "h-12 w-12 rounded-2xl border-slate-200 bg-[#F8FAFC] text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-100 transition-all",
+                disliked && "border-red-200 bg-red-50 text-red-600"
+              )}
+              onClick={(e) => {
+                e.stopPropagation();
+                requireAuth("reject_property", onDislike);
+              }}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );
