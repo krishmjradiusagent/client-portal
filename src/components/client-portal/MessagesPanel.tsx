@@ -12,6 +12,7 @@ import { ChatMessageBubble } from "./ChatMessageBubble";
 import { MessageComposer } from "./MessageComposer";
 import { usePropertyContext } from "../PropertyContext";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth";
 
 const MOCK_CONVERSATIONS = [
   {
@@ -94,8 +95,10 @@ export function MessagesPanel() {
   const [activeConversation, setActiveConversation] = useState(MOCK_CONVERSATIONS[0]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const { requireAuth } = useAuth();
+
   const handleSend = (content: string) => {
-    sendMessage(content);
+    requireAuth("message_agent", () => sendMessage(content));
   };
 
   useEffect(() => {

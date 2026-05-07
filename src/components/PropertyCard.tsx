@@ -9,6 +9,7 @@ import type { Property } from "./mockData";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import "@/components/shadcn-space/button/button-02.css";
+import { useAuth } from "@/lib/auth";
 
 type Props = {
   property: Property;
@@ -21,6 +22,7 @@ type Props = {
 
 export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHomeValue }: Props) {
   const [currentImgIdx, setCurrentImgIdx] = useState(0);
+  const { requireAuth } = useAuth();
   const liked = property.status === "interested";
   const disliked = property.status === "notInterested";
   const isNew = property.isNew;
@@ -238,7 +240,7 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
             )}
             onClick={(e) => {
               e.stopPropagation();
-              onLike();
+              requireAuth("favorite_property", onLike);
             }}
           >
             <Heart className={cn("h-4 w-4 mr-2", liked ? "fill-current text-white" : "text-slate-400")} />
@@ -253,7 +255,7 @@ export function PropertyCard({ property, onOpen, onLike, onDislike, route, isHom
             )}
             onClick={(e) => {
               e.stopPropagation();
-              onDislike();
+              requireAuth("reject_property", onDislike);
             }}
           >
             <X className="h-5 w-5" />

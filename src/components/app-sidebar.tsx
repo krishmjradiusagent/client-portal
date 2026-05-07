@@ -19,6 +19,8 @@ import {
   Home,
   Plus,
 } from "lucide-react"
+import { useAuth } from "@/lib/auth"
+import { Separator } from "@/components/ui/separator"
 
 import {
   Avatar,
@@ -85,7 +87,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     activeHomeValueId,
     setActiveHomeValueId
   } = usePropertyContext()
+  const { authUser, signOut, setAuthMode } = useAuth()
   const isCollapsed = state === "collapsed"
+  const isAuthenticated = Boolean(authUser)
 
   const searchesGroup = {
     label: "SEARCHES",
@@ -344,18 +348,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <CollapsibleContent>
               <SidebarGroupContent>
                 <SidebarMenu className="gap-0.5">
-                  {accountGroup.items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
-                        <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9 transition-colors duration-200">
-                          <Link href={item.url}>
-                            <item.icon className="size-4" />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </motion.div>
-                    </SidebarMenuItem>
-                  ))}
+                  {accountGroup.items.map((item) => {
+                    if (item.title === "Logout") {
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
+                            <SidebarMenuButton
+                              tooltip={item.title}
+                              className="h-9 transition-colors duration-200"
+                              onClick={() => signOut()}
+                            >
+                              <item.icon className="size-4" />
+                              <span>{item.title}</span>
+                            </SidebarMenuButton>
+                          </motion.div>
+                        </SidebarMenuItem>
+                      );
+                    }
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
+                          <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(pathname, item.url)} className="h-9 transition-colors duration-200">
+                            <Link href={item.url}>
+                              <item.icon className="size-4" />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </motion.div>
+                      </SidebarMenuItem>
+                    );
+                  })}
                   
                   <SidebarMenuItem>
                     <motion.div whileTap={{ scale: 0.97 }} transition={transition}>
@@ -371,6 +393,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         </Collapsible>
       </SidebarContent>
+
+      {/* Signed-out auth card — visible only when logged out and sidebar expanded */}
+      {!isAuthenticated && !isCollapsed && (
+        <div className="px-3 pb-3">
+          <div className="rounded-xl border border-sidebar-border/50 bg-sidebar-accent/30 p-4 space-y-3">
+            <p className="text-[12px] text-sidebar-foreground/70 leading-relaxed">
+              Sign up to start searching with your agent.
+            </p>
+            <Button
+              size="sm"
+              className="w-full h-8 text-xs font-semibold"
+              onClick={() => setAuthMode("signup")}
+            >
+              Sign Up
+            </Button>
+            <Separator className="bg-sidebar-border/30" />
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setAuthMode("signin")}
+                className="text-[11px] text-sidebar-foreground/50 hover:text-sidebar-foreground underline-offset-4 hover:underline transition-colors"
+              >
+                Have an account? Sign In
+              </button>
+            </div>
+            <Separator className="bg-sidebar-border/20" />
+            <div className="space-y-0.5">
+              <p className="text-[10px] text-sidebar-foreground/35 tracking-wide">ila@radiusagent.com</p>
+              <p className="text-[10px] text-sidebar-foreground/35 tracking-wide">License #01383148</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <SidebarFooter className={cn("flex flex-row items-center justify-end transition-all duration-300", isCollapsed ? "p-2 justify-center" : "p-4")}>
       </SidebarFooter>

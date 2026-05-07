@@ -9,29 +9,33 @@ import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 
 export function HomeValueLandingPage() {
   const { addHomeValueListing } = usePropertyContext();
+  const { requireAuth } = useAuth();
   const [address, setAddress] = useState("");
   const router = useRouter();
 
   const handleAddHome = () => {
     if (!address) return;
-    const newId = `hv-${Date.now()}`;
-    addHomeValueListing({
-      id: newId,
-      address: address,
-      city: "Austin",
-      state: "TX",
-      zip: "78701",
-      estimate: 1250000,
-      beds: 3,
-      baths: 2,
-      sqft: 1850,
-      lastUpdated: "Just now",
-      imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2070&auto=format&fit=crop"
+    requireAuth("add_home_value", () => {
+      const newId = `hv-${Date.now()}`;
+      addHomeValueListing({
+        id: newId,
+        address: address,
+        city: "Austin",
+        state: "TX",
+        zip: "78701",
+        estimate: 1250000,
+        beds: 3,
+        baths: 2,
+        sqft: 1850,
+        lastUpdated: "Just now",
+        imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2070&auto=format&fit=crop"
+      });
+      router.push(`/home-value?id=${newId}`);
     });
-    router.push(`/home-value?id=${newId}`);
   };
 
   const benefits = [

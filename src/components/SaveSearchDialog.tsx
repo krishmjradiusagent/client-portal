@@ -32,15 +32,17 @@ type Props = {
     propertyType: string;
     matchScore: string;
   };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
-export function SaveSearchDialog({ children, onSave, selectedLocation, minPrice, maxPrice, activeFilters }: Props) {
+export function SaveSearchDialog({ children, onSave, selectedLocation, minPrice, maxPrice, activeFilters, open, onOpenChange }: Props) {
   const [name, setName] = useState(`Search in ${selectedLocation || "current area"}`);
   const [frequency, setFrequency] = useState("daily");
   const [emailAlerts, setEmailAlerts] = useState(true);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>

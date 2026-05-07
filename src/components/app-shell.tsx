@@ -8,6 +8,8 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar"
 import { PropertyProvider } from "@/components/PropertyContext"
+import { AuthProvider } from "@/lib/auth"
+import { AuthModal } from "@/components/auth/AuthModal"
 import { cn } from "@/lib/utils"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -19,30 +21,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   )
 
   return (
-    <PropertyProvider>
-      <div className={cn(
-        "dark bg-background text-foreground transition-all duration-300",
-        isFixedLayout ? "h-[100dvh] overflow-hidden" : "min-h-screen"
-      )}>
-      <SidebarProvider
-        defaultOpen
-        className={cn(isFixedLayout && "h-full")}
-        style={
-          {
-            "--sidebar-width": "16rem",
-            "--sidebar-width-mobile": "18rem",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar />
-        <SidebarInset className={cn(
-          "min-h-0",
-          isFixedLayout ? "h-full" : "overflow-visible"
+    <AuthProvider>
+      <PropertyProvider>
+        <div className={cn(
+          "dark bg-background text-foreground transition-all duration-300",
+          isFixedLayout ? "h-[100dvh] overflow-hidden" : "min-h-screen"
         )}>
-          {children}
-        </SidebarInset>
-      </SidebarProvider>
-    </div>
-    </PropertyProvider>
+          <SidebarProvider
+            defaultOpen
+            className={cn(isFixedLayout && "h-full")}
+            style={
+              {
+                "--sidebar-width": "16rem",
+                "--sidebar-width-mobile": "18rem",
+              } as React.CSSProperties
+            }
+          >
+            <AppSidebar />
+            <SidebarInset className={cn(
+              "min-h-0",
+              isFixedLayout ? "h-full" : "overflow-visible"
+            )}>
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
+        </div>
+        {/* Auth modal renders at root level, portaled by Dialog */}
+        <AuthModal />
+      </PropertyProvider>
+    </AuthProvider>
   )
 }

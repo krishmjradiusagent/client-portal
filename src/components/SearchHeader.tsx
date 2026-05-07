@@ -30,6 +30,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { sortOptions } from "./mockData";
+import { useAuth } from "@/lib/auth";
 
 export type BoardMode = "search" | "myMatches" | "savedSearch" | "board";
 
@@ -87,9 +88,11 @@ export function SearchHeader({
   const isSearchMode = mode === "search";
   const isSavedSearchBoard = mode === "savedSearch";
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isSaveSearchOpen, setIsSaveSearchOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [localMoreFilters, setLocalMoreFilters] = useState<MoreFiltersState>(moreFilters);
   const [isMoreFiltersOpen, setIsMoreFiltersOpen] = useState(false);
+  const { requireAuth } = useAuth();
 
   const activeCount = useMemo(() => {
     let count = 0;
@@ -390,8 +393,10 @@ export function SearchHeader({
                 </Sheet>
               )}
 
-              {/* Save Search */}
-              <SaveSearchDialog 
+              {/* Save Search — gated */}
+              <SaveSearchDialog
+                open={isSaveSearchOpen}
+                onOpenChange={setIsSaveSearchOpen}
                 onSave={onSaveSearch}
                 selectedLocation={selectedLocation}
                 minPrice={minPrice}
@@ -403,7 +408,15 @@ export function SearchHeader({
                   matchScore: "Any"
                 }}
               >
-                <Button variant="ghost" size="sm" className="h-9 rounded-full px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 rounded-full px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold gap-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    requireAuth("save_search", () => setIsSaveSearchOpen(true));
+                  }}
+                >
                   <Save className="h-4 w-4" />
                   Save search
                 </Button>
