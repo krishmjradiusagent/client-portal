@@ -29,30 +29,30 @@ export function ChatMessageBubble({
         ease: [0.32, 0.72, 0, 1] 
       }}
       className={cn(
-        "flex w-full", 
+        "flex w-full mb-1", 
         isIncoming ? "justify-start" : "justify-end",
-        isStacked ? "mt-1" : "mt-6"
+        isStacked ? "mt-0.5" : "mt-4"
       )}
     >
       <div
         className={cn(
-          "relative flex flex-col px-4 py-3 shadow-sm transition-all duration-200",
+          "relative flex flex-col px-4 py-2.5 transition-all duration-200 shadow-sm",
           isIncoming
-            ? "bg-muted text-foreground rounded-2xl rounded-bl-md max-w-[82%] md:max-w-[520px]"
-            : "bg-primary text-primary-foreground rounded-2xl rounded-br-md max-w-[82%] md:max-w-[520px]"
+            ? "bg-muted text-foreground rounded-2xl rounded-bl-sm mr-auto max-w-[85%] sm:max-w-[70%]"
+            : "bg-primary text-primary-foreground rounded-2xl rounded-br-sm ml-auto max-w-[85%] sm:max-w-[70%]"
         )}
       >
-        <div className="text-[14px] leading-6 whitespace-pre-wrap font-medium tracking-tight">{content}</div>
+        <div className="text-[14px] leading-relaxed whitespace-pre-wrap font-medium tracking-tight">{content}</div>
         <div
           className={cn(
-            "flex items-center gap-1 mt-1.5 text-[10px] select-none font-bold tracking-tight",
-            isIncoming ? "text-muted-foreground/80" : "text-primary-foreground/70 justify-end"
+            "flex items-center gap-1 mt-1 text-[9px] select-none font-bold tracking-tight opacity-70",
+            isIncoming ? "text-muted-foreground" : "text-primary-foreground justify-end"
           )}
         >
           <span className="uppercase">{time}</span>
           {!isIncoming && showStatus && status && (
-            <div className="flex items-center gap-0.5 ml-1.5">
-              <Check className="size-3" />
+            <div className="flex items-center gap-0.5 ml-1">
+              <Check className="size-2.5" />
               <span className="uppercase tracking-widest">{status}</span>
             </div>
           )}

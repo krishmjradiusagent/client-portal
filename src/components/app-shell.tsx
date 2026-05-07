@@ -26,6 +26,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}>
       <SidebarProvider
         defaultOpen
+        className={cn(isFixedLayout && "h-full")}
         style={
           {
             "--sidebar-width": "16rem",
@@ -34,7 +35,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }
       >
         <AppSidebar />
-        <SidebarInset className={cn(!isFixedLayout && "overflow-visible")}>
+        <SidebarInset className={cn(
+          "min-h-0",
+          isFixedLayout ? "h-full" : "overflow-visible"
+        )}>
           {children}
         </SidebarInset>
       </SidebarProvider>
