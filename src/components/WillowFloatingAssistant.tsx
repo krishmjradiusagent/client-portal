@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Infinity, Send, X, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { Infinity as InfinityIcon, Send, X, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
+import SiriOrb from "./ui/smoothui/siri-orb";
 import { cn } from "@/lib/utils";
 
 export type WillowContext =
@@ -137,7 +139,7 @@ export function WillowFloatingAssistant({ context = "default", className }: Will
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 bg-slate-50 rounded-t-lg">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
-                <Infinity className="w-5 h-5 text-white" />
+                <InfinityIcon className="w-5 h-5 text-white" />
               </div>
               <div>
                 <CardTitle className="text-sm font-semibold">{copy.title}</CardTitle>
@@ -207,23 +209,58 @@ export function WillowFloatingAssistant({ context = "default", className }: Will
         </Card>
       )}
 
-      <Button
-        size="icon"
+      {/* Willow FAB with Siri Orb background */}
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "w-14 h-14 rounded-full shadow-lg transition-all duration-500",
-          isOpen ? "bg-slate-100 text-slate-900 hover:bg-slate-200 rotate-90" : "bg-slate-900 text-white hover:bg-slate-800"
+          "relative w-16 h-16 rounded-full shadow-lg transition-all duration-500 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          isOpen && "rotate-90"
         )}
         aria-label="Open Willow AI"
       >
-        {isOpen ? <X className="w-6 h-6" /> : (
-          <div className="relative">
-            <Infinity className="w-8 h-8" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-slate-400 rounded-full animate-ping opacity-75" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-slate-400 rounded-full opacity-50" />
+        {/* Siri Orb animated background */}
+        {!isOpen && (
+          <div className="absolute inset-0 rounded-full overflow-hidden">
+            <SiriOrb
+              size="64px"
+              animationDuration={12}
+              colors={{
+                bg: "oklch(18% 0.02 264)",
+                c1: "oklch(55% 0.18 280)",
+                c2: "oklch(50% 0.15 230)",
+                c3: "oklch(45% 0.12 320)",
+              }}
+            />
           </div>
         )}
-      </Button>
+
+        {/* Fallback bg when open */}
+        {isOpen && (
+          <div className="absolute inset-0 rounded-full bg-slate-200" />
+        )}
+
+        {/* Icon layer */}
+        <div className="relative z-10 flex items-center justify-center w-full h-full">
+          {isOpen ? (
+            <X className="w-6 h-6 text-slate-900" />
+          ) : (
+            <motion.div
+              animate={{
+                scale: [1, 1.15, 1],
+                opacity: [0.9, 1, 0.9],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: [0.32, 0.72, 0, 1],
+              }}
+            >
+              <InfinityIcon className="w-9 h-9 text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]" />
+            </motion.div>
+          )}
+        </div>
+      </button>
     </div>
   );
 }
+
