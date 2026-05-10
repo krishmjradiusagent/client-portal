@@ -131,9 +131,9 @@ export function WillowAuraButton({ onClick }: { onClick: () => void }) {
           className="relative inset-0 z-0"
           squareSize={3}
           gridGap={5}
-          color="rgb(161, 161, 170)"
+          color="hsl(var(--muted-foreground))" // shadcn semantic token, lighter than card
           maxOpacity={0.4}
-          flickerChance={0.2}
+          flickerChance={1}
         />
       </span>
       <span className="pointer-events-none absolute inset-0 z-0 rounded-full bg-zinc-950/24" />

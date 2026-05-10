@@ -140,9 +140,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className="relative inset-0 z-0 [mask-image:radial-gradient(450px_circle_at_center,white,transparent)]"
                 squareSize={4}
                 gridGap={6}
-                color="rgb(161, 161, 170)" // zinc-400 (lighter than card)
+                color="hsl(var(--muted-foreground))" // shadcn semantic token, lighter than card
                 maxOpacity={0.3}
-                flickerChance={0.1}
+                flickerChance={1}
               />
             </div>
           )}
