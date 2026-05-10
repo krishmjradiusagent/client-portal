@@ -38,3 +38,10 @@ node_modules/
 *.tsbuildinfo
 .next/
 node_modules/
+
+.agents/
+scratch/
+test-results/
+*.png
+skills-lock.json
+playwright-willow-verify.spec.ts

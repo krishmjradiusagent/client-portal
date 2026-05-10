@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Home, Infinity, MessageSquareText, Search, Send, TrendingUp, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import { AuroraBars } from "./ui/aurora-bars";
+import { FlickeringGrid } from "./ui/flickering-grid";
 import { PinnedList, type PinnedListItem } from "./unlumen-ui/pinned-list";
 import { cn } from "@/lib/utils";
 
@@ -127,13 +127,13 @@ export function WillowAuraButton({ onClick }: { onClick: () => void }) {
       className="group relative h-14 overflow-hidden rounded-full border border-white/15 bg-zinc-950 px-5 py-0 text-white shadow-lg shadow-black/30 hover:bg-zinc-950 focus-visible:ring-2 focus-visible:ring-cyan-300/70"
     >
       <span className="pointer-events-none absolute inset-0 z-0 rounded-full opacity-75">
-        <AuroraBars
-          barCount={36}
-          colors={["#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "transparent"]}
-          speed={1}
-          blur={3}
-          maxHeightRatio={1}
-          minHeightRatio={1}
+        <FlickeringGrid
+          className="relative inset-0 z-0"
+          squareSize={3}
+          gridGap={5}
+          color="rgb(161, 161, 170)"
+          maxOpacity={0.4}
+          flickerChance={0.2}
         />
       </span>
       <span className="pointer-events-none absolute inset-0 z-0 rounded-full bg-zinc-950/24" />

@@ -39,6 +39,7 @@
     "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
     "next": "latest",
+    "ogl": "^1.0.11",
     "react": "latest",
     "react-dom": "latest",
     "react-tweet": "^3.3.0",

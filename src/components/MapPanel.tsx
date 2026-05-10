@@ -52,7 +52,7 @@ export function MapPanel({
         onClick={onMapClick}
       >
         {/* Map Overlay Controls */}
-        <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
+        <div className="no-scrollbar absolute left-4 right-4 top-4 z-20 flex items-center gap-2 overflow-x-auto lg:right-auto lg:overflow-visible">
           <ControlPill 
             icon={<MapPinned className="h-4 w-4" />}
             label="All areas"

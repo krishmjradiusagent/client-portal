@@ -18,6 +18,9 @@ import {
   History,
   Home,
   Plus,
+  Bookmark,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth"
 import { Separator } from "@/components/ui/separator"
@@ -62,7 +65,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence, type Transition } from "framer-motion"
-import { AuroraBars } from "@/components/ui/aurora-bars"
+import { FlickeringGrid } from "@/components/ui/flickering-grid"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { usePropertyContext } from "./PropertyContext"
@@ -75,7 +78,7 @@ function isActive(pathname: string, url: string) {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const { state } = useSidebar()
+  const { state, toggleSidebar } = useSidebar()
   const { 
     interestedCount, 
     notInterestedCount, 
@@ -120,24 +123,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" variant="floating" {...props}>
-      <SidebarHeader className={cn("transition-all duration-300", isCollapsed ? "p-1.5" : "p-4 pb-2")}>
+      <SidebarHeader className={cn("transition-all duration-300", isCollapsed ? "p-1.5" : "p-3 pb-1")}>
         <Card className={cn(
           "relative overflow-hidden border-none transition-all duration-300",
           isCollapsed 
             ? "bg-transparent p-0 mb-0 aspect-square flex items-center justify-center" 
-            : "bg-zinc-800/50 backdrop-blur-md rounded-2xl p-4 mb-3"
+            : "bg-zinc-800/50 backdrop-blur-md rounded-2xl p-3 mb-1"
         )}>
           {/* Base Overlay for readability */}
           {!isCollapsed && <div className="absolute inset-0 bg-zinc-950/20 backdrop-blur-sm z-0" />}
 
           {/* Background Animation Layer */}
           {!isCollapsed && (
-            <div className="absolute inset-0 z-0 opacity-80 pointer-events-none">
-              <AuroraBars 
-                barCount={14} 
-                colors={["#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "transparent"]}
-                speed={3}
-                blur={15}
+            <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+              <FlickeringGrid 
+                className="relative inset-0 z-0 [mask-image:radial-gradient(450px_circle_at_center,white,transparent)]"
+                squareSize={4}
+                gridGap={6}
+                color="rgb(161, 161, 170)" // zinc-400 (lighter than card)
+                maxOpacity={0.3}
+                flickerChance={0.1}
               />
             </div>
           )}
@@ -145,11 +150,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {/* Content Layer */}
           <div className={cn(
             "relative z-10 flex flex-col items-center text-center transition-all duration-300",
-            isCollapsed ? "gap-0" : "gap-2"
+            isCollapsed ? "gap-0" : "gap-1.5"
           )}>
             <Avatar className={cn(
               "rounded-full border-2 border-sidebar-border/50 shadow-lg transition-all duration-300",
-              isCollapsed ? "h-8 w-8" : "h-14 w-14"
+              isCollapsed ? "h-8 w-8" : "h-11 w-11"
             )}>
               <AvatarImage src="/avatar-ila.png" alt="Ila Corcoran" />
               <AvatarFallback className="bg-muted text-[10px] font-bold">IC</AvatarFallback>
@@ -162,11 +167,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 5 }}
                   transition={transition}
-                  className="flex flex-col gap-0.5"
+                  className="flex flex-col gap-0"
                 >
-                  <span className="text-base font-bold text-sidebar-foreground tracking-tight drop-shadow-sm">Ila Corcoran</span>
-                  <span className="text-sm text-sidebar-foreground/90 font-semibold">Radius Agent</span>
-                  <span className="text-xs text-sidebar-foreground/70 mt-0.5 tracking-wider font-medium">(562) 512-5806</span>
+                  <span className="text-sm font-bold text-sidebar-foreground tracking-tight drop-shadow-sm">Ila Corcoran</span>
+                  <span className="text-xs text-sidebar-foreground/90 font-semibold">Radius Agent</span>
+                  <span className="text-[10px] text-sidebar-foreground/70 tracking-wider font-medium">(562) 512-5806</span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -174,14 +179,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Card>
       </SidebarHeader>
 
-      <SidebarContent className="gap-1">
+      <SidebarContent className="gap-0">
         {/* SEARCHES Section - Collapsible */}
-        <SidebarGroup className="py-1">
-          <SidebarGroupLabel className="h-7 mb-1 px-2">
+        <SidebarGroup className="py-0.5">
+          <SidebarGroupLabel className="h-7 mb-0 px-2">
             {searchesGroup.label}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-0.5">
+            <SidebarMenu className="gap-0">
               {searchesGroup.items.map((item) => {
                 if (item.title === "Home Value") {
                   return (
@@ -204,14 +209,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           </Link>
                         </SidebarMenuAction>
                         <CollapsibleContent>
-                          <SidebarMenuSub className="mr-0 pr-0">
+                          <SidebarMenuSub className="mr-0 pr-0 gap-0 py-0">
                             {homeValueListings.map((listing) => (
                               <SidebarMenuSubItem key={listing.id}>
                                 <SidebarMenuSubButton 
                                   asChild 
                                   isActive={activeHomeValueId === listing.id && isActive(pathname, item.url)}
                                   onClick={() => setActiveHomeValueId(listing.id)}
-                                  className="h-8 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+                                  className="h-7 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
                                 >
                                   <Link href={`${item.url}?id=${listing.id}`}>
                                     <span className="truncate">{listing.address.split(',')[0]}</span>
@@ -240,8 +245,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <SidebarMenuButton 
                           asChild
                           tooltip={item.title} 
-                          isActive={isActive(pathname, item.url) || (item.title === "My Searches" && isActive(pathname, "/searches"))} 
-                          className="h-9 pr-8"
+                          isActive={false}
+                          className="h-9 pr-8 bg-transparent hover:bg-sidebar-accent data-[active=true]:bg-transparent data-[state=open]:bg-transparent"
                         >
                           <Link href={item.url}>
                             <item.icon className="size-4" />
@@ -249,19 +254,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           </Link>
                         </SidebarMenuButton>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuAction className="right-1 hover:bg-slate-100 rounded-lg">
+                          <SidebarMenuAction className="right-1 hover:bg-sidebar-accent/50 rounded-lg">
                             <ChevronsUpDown className="size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                           </SidebarMenuAction>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <SidebarMenuSub className="mr-0 pr-0">
+                          <SidebarMenuSub className="mr-0 pr-0 gap-0 py-0 mt-1 mb-1">
                             {savedSearches.map((search) => (
                               <SidebarMenuSubItem key={search.id}>
                                 <SidebarMenuSubButton 
                                   asChild 
                                   isActive={selectedSavedSearchId === search.id && (isActive(pathname, item.url) || isActive(pathname, "/searches"))}
                                   onClick={() => setSelectedSavedSearchId(search.id)}
-                                  className="h-8 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+                                  className="h-[26px] py-0 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors data-[active=true]:py-0"
                                 >
                                   <Link href={item.url}>
                                     <span className="truncate">{search.name}</span>
@@ -320,7 +325,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         {/* Engagement Section - Collapsible */}
         <Collapsible defaultOpen className="group/collapsible">
-          <SidebarGroup className="py-1">
+          <SidebarGroup className="py-0.5">
             <SidebarGroupLabel asChild className="h-7 mb-1 px-2">
               <CollapsibleTrigger>
                 {engagementGroup.label}
@@ -355,7 +360,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         {/* MORE Section - Collapsible */}
         <Collapsible className="group/collapsible">
-          <SidebarGroup className="py-1">
+          <SidebarGroup className="py-0.5">
             <SidebarGroupLabel asChild className="h-7 mb-1 px-2">
               <CollapsibleTrigger>
                 MORE
@@ -411,50 +416,52 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Collapsible>
       </SidebarContent>
 
-      {/* Signed-out auth card — visible only when logged out and sidebar expanded */}
+      {/* Unified Auth + Agent Section */}
       {!isAuthenticated && !isCollapsed && (
-        <div className="px-3 pb-3">
-          <Card className="border-border bg-card shadow-none">
-            <CardHeader className="space-y-1.5 p-4 pb-2">
-              <div className="flex items-center gap-2">
-                <Heart className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-sm font-semibold text-card-foreground">
-                  Save homes
-                </CardTitle>
+        <div className="mt-auto px-3 pb-1 pt-0">
+          <div className="bg-background rounded-xl border border-border shadow-sm p-3 flex flex-col gap-3 relative">
+            <div className="relative z-10 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-foreground">
+                <Bookmark className="h-4 w-4" />
+                <span className="text-xs font-semibold tracking-tight">Save your progress</span>
               </div>
-              <CardDescription className="text-sm leading-5 text-muted-foreground">
-                Create an account to save searches, favorite homes, and message your agent.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-2 p-4 pt-2">
-              <Button
-                size="sm"
-                className="h-9 w-full"
+              <p className="text-[11px] text-muted-foreground leading-[1.3] pr-2">
+                Create an account to save favorites and collaborate.
+              </p>
+            </div>
+            
+            <div className="relative z-10 flex flex-col gap-1.5 mt-1">
+              <Button 
+                size="sm" 
+                className="h-8 w-full text-[12px] font-semibold"
                 onClick={() => setAuthMode("signup")}
               >
-                Sign up
+                Sign up free
               </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-9 w-full text-muted-foreground hover:bg-muted hover:text-card-foreground"
-                onClick={() => setAuthMode("signin")}
-              >
-                Sign in
-              </Button>
-            </CardContent>
-          </Card>
-          <div className="mt-4 px-1 space-y-0.5 text-left text-[11px] text-sidebar-foreground/50 leading-tight">
-            <p>Ila Corcoran</p>
-            <p>ila@radiusagent.com</p>
-            <p>License #01383148</p>
+              <div className="flex items-center justify-center gap-1 text-[11px] pt-1">
+                <span className="text-muted-foreground">Have an account?</span>
+                <button 
+                  className="font-medium text-foreground hover:text-primary transition-colors"
+                  onClick={() => setAuthMode("signin")}
+                >
+                  Log in
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <SidebarFooter className={cn("flex flex-row items-center justify-end transition-all duration-300", isCollapsed ? "p-2 justify-center" : "p-4")}>
+      <SidebarFooter className={cn("flex flex-row items-center transition-all duration-300 p-3", isCollapsed ? "justify-center" : "justify-between")}>
+        {!isCollapsed && (
+          <div className="flex flex-col text-[10px] text-muted-foreground">
+            <span className="font-medium text-sidebar-foreground">ilia@radiusagent.com</span>
+            <span>License #01383148</span>
+          </div>
+        )}
+        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="h-8 w-8 text-muted-foreground hover:text-foreground shrink-0">
+          {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+        </Button>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

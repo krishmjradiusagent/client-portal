@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { SearchHeader } from "./SearchHeader";
 import { ResultsPanel } from "./ResultsPanel";
 import { MapPanel } from "./MapPanel";
@@ -16,9 +17,13 @@ import { HomeValuePage } from "./HomeValuePage";
 import { PropertyDetailPage } from "./PropertyDetailPage";
 import { MessagesPanel } from "./client-portal/MessagesPanel";
 import { WillowFloatingAssistant, type WillowContext } from "./WillowFloatingAssistant";
+import { Button } from "./ui/button";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import type { Property, RouteKey, SavedSearch } from "./mockData";
 import { usePropertyContext, type MoreFiltersState, defaultMoreFilters } from "./PropertyContext";
 import { useAuth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
+import { Heart, History, Home, LayoutGrid, List, Map, MessageSquare, Save, Search, Settings2, User, X } from "lucide-react";
 
 const routeTitles: Record<RouteKey, string> = {
   search: "Search",
@@ -32,6 +37,18 @@ const routeTitles: Record<RouteKey, string> = {
   "recently-viewed": "Recently Viewed",
   "home-value": "Home Value"
 };
+
+const mobileRouteTabs = [
+  { value: "search", label: "Search", href: "/search", icon: Search },
+  { value: "my-searches", label: "My Searches", href: "/my-searches", icon: LayoutGrid },
+  { value: "home-value", label: "Home Value", href: "/home-value", icon: Home },
+  { value: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
+  { value: "interested", label: "Interested", href: "/interested", icon: Heart },
+  { value: "not-interested", label: "Not Interested", href: "/not-interested", icon: X },
+  { value: "recently-viewed", label: "Recent", href: "/recently-viewed", icon: History },
+  { value: "profile", label: "Profile", href: "/profile", icon: User },
+  { value: "settings", label: "Settings", href: "/settings", icon: Settings2 }
+] as const;
 
 export function ClientPortal() {
   const pathname = usePathname();
@@ -85,6 +102,12 @@ export function ClientPortal() {
   const [filtersModalOpen, setFiltersModalOpen] = useState(false);
   const [drawingMode, setDrawingMode] = useState(false);
   const [customBoundaryActive, setCustomBoundaryActive] = useState(false);
+  const [mobileSearchView, setMobileSearchView] = useState<"list" | "map">("map");
+  const [mobileSaveSearchOpen, setMobileSaveSearchOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileSearchView("map");
+  }, [activeRoute]);
 
   const selectedSavedSearch = useMemo(() =>
     savedSearches.find(s => s.id === selectedSavedSearchId),
@@ -190,6 +213,38 @@ export function ClientPortal() {
     updateSavedSearch(updated);
   };
 
+  const renderMapPanel = () => (
+    <MapPanel
+      mode={
+        (activeRoute === "my-searches" && selectedSavedSearch)
+          ? "savedSearch"
+          : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
+            ? "board"
+            : "search"
+      }
+      properties={routeProperties}
+      drawingMode={drawingMode}
+      onToggleDrawingMode={() => setDrawingMode(!drawingMode)}
+      customBoundaryActive={customBoundaryActive}
+      selectedLocation={selectedLocation}
+      mapLayer="Street"
+      onMarkerClick={(property) => {
+        setSelectedPropertyId(property.id);
+        markVisited(property.id);
+      }}
+      onMapClick={() => {
+        if (drawingMode) {
+          setCustomBoundaryActive(true);
+          setDrawingMode(false);
+        }
+      }}
+      onSaveSearch={handleSaveSearch}
+      minPrice={minPrice}
+      maxPrice={maxPrice}
+      moreFilters={moreFilters}
+    />
+  );
+
   return (
     <>
       {activeRoute === "profile" ? (
@@ -242,8 +297,64 @@ export function ClientPortal() {
           />
           </div>
 
-          <section className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[720px_minmax(0,1fr)]">
-            <aside className="h-full min-h-0 w-[720px] overflow-y-auto overscroll-contain bg-background">
+          <section className="flex min-h-0 flex-1 flex-col overflow-hidden lg:grid lg:grid-cols-[720px_minmax(0,1fr)]">
+            <div className="space-y-2 border-b border-slate-200 bg-white px-3 py-2 lg:hidden">
+              <Tabs value={activeRoute === "listing" ? "search" : activeRoute}>
+                <TabsList className="flex h-11 w-full justify-start gap-1 overflow-x-auto rounded-full bg-slate-100 p-1 no-scrollbar">
+                  {mobileRouteTabs.map((item) => (
+                    <TabsTrigger key={item.value} value={item.value} asChild className="h-9 shrink-0 rounded-full gap-2 px-3 text-sm">
+                      <Link href={item.href}>
+                        <item.icon className="h-4 w-4" />
+                        {item.label}
+                      </Link>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+
+              <Tabs value={mobileSearchView} onValueChange={(value) => setMobileSearchView(value as "list" | "map")}>
+                <div className="flex items-center gap-2">
+                  <TabsList className="grid h-11 flex-1 grid-cols-2 rounded-full bg-slate-100 p-1">
+                    <TabsTrigger value="list" className="h-9 rounded-full gap-2 text-sm">
+                      <List className="h-4 w-4" />
+                      List
+                    </TabsTrigger>
+                    <TabsTrigger value="map" className="h-9 rounded-full gap-2 text-sm">
+                      <Map className="h-4 w-4" />
+                      Map
+                    </TabsTrigger>
+                  </TabsList>
+                  <SaveSearchDialog
+                    open={mobileSaveSearchOpen}
+                    onOpenChange={setMobileSaveSearchOpen}
+                    onSave={handleSaveSearch}
+                    selectedLocation={selectedLocation}
+                    minPrice={minPrice}
+                    maxPrice={maxPrice}
+                    activeFilters={{
+                      beds: moreFilters.beds,
+                      baths: moreFilters.baths,
+                      propertyType: moreFilters.propertyType,
+                      matchScore: "Any"
+                    }}
+                  >
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-11 shrink-0 rounded-full px-4 text-sm font-semibold"
+                    >
+                      <Save className="h-4 w-4" />
+                      Save search
+                    </Button>
+                  </SaveSearchDialog>
+                </div>
+              </Tabs>
+            </div>
+
+            <aside className={cn(
+              "h-full min-h-0 w-full flex-1 overflow-y-auto overscroll-contain bg-background lg:w-[720px]",
+              mobileSearchView === "map" && "hidden lg:block"
+            )}>
               <ResultsPanel
                 route={activeRoute}
                 properties={routeProperties}
@@ -279,36 +390,11 @@ export function ClientPortal() {
                 }
               />
             </aside>
-            <div className="relative h-full min-h-0 overflow-hidden border-l border-border">
-              <MapPanel
-                mode={
-                  (activeRoute === "my-searches" && selectedSavedSearch)
-                    ? "savedSearch"
-                    : ["interested", "not-interested", "recently-viewed"].includes(activeRoute)
-                      ? "board"
-                      : "search"
-                }
-                properties={routeProperties}
-                drawingMode={drawingMode}
-                onToggleDrawingMode={() => setDrawingMode(!drawingMode)}
-                customBoundaryActive={customBoundaryActive}
-                selectedLocation={selectedLocation}
-                mapLayer="Street"
-                onMarkerClick={(property) => {
-                  setSelectedPropertyId(property.id);
-                  markVisited(property.id);
-                }}
-                onMapClick={() => {
-                  if (drawingMode) {
-                    setCustomBoundaryActive(true);
-                    setDrawingMode(false);
-                  }
-                }}
-                onSaveSearch={handleSaveSearch}
-                minPrice={minPrice}
-                maxPrice={maxPrice}
-                moreFilters={moreFilters}
-              />
+            <div className={cn(
+              "relative h-full min-h-0 flex-1 overflow-hidden border-l border-border max-lg:border-l-0",
+              mobileSearchView === "list" && "hidden lg:block"
+            )}>
+              {renderMapPanel()}
             </div>
           </section>
         </div>

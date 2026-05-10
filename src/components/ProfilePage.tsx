@@ -21,6 +21,7 @@ import { Separator } from "./ui/separator";
 import { useAuth } from "@/lib/auth";
 import { AddressAutocomplete } from "./ui/address-autocomplete";
 import { Train, Car, Bike, Footprints } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function ProfilePage() {
   const { 

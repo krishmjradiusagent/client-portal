@@ -172,7 +172,7 @@ export function SearchHeader({
       </div>
 
       {/* Row 2: Title, Context, Filters & Sort */}
-      <div className="flex h-14 items-center gap-3 border-b px-4 bg-white">
+      <div className="flex min-h-14 flex-col gap-3 border-b bg-white px-4 py-3 lg:h-14 lg:flex-row lg:items-center lg:gap-3 lg:py-0">
         <div className="flex min-w-0 items-center gap-3">
           <h1 className="text-base font-semibold tracking-tight text-foreground whitespace-nowrap">
             {isSearchMode ? "Search" : title}
@@ -183,7 +183,7 @@ export function SearchHeader({
           </span>
         </div>
 
-        <div className="ml-auto flex min-w-0 items-center gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto no-scrollbar lg:ml-auto lg:w-auto">
           {isSearchMode && (
             <div className="flex items-center gap-2 shrink-0">
               {/* For sale */}
@@ -411,7 +411,7 @@ export function SearchHeader({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-9 rounded-full px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold gap-2"
+                  className="hidden h-11 rounded-full px-4 text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-semibold gap-2 lg:flex lg:h-9"
                   onClick={(e) => {
                     e.stopPropagation();
                     requireAuth("save_search", () => setIsSaveSearchOpen(true));
@@ -449,7 +449,7 @@ export function SearchHeader({
               <>
                 <Button 
                   variant="outline" 
-                  className="h-9 rounded-full px-4 text-sm border-slate-200 shadow-sm hover:bg-slate-50 transition-all"
+                  className="h-11 rounded-full px-4 text-sm border-slate-200 shadow-sm hover:bg-slate-50 transition-all lg:h-9"
                   onClick={() => setIsEditSheetOpen(true)}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
@@ -469,6 +469,4 @@ export function SearchHeader({
     </div>
   );
 }
-
-
 
